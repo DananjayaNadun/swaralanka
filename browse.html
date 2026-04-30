@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse Songs — SwaraLanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.page-hero{padding:110px 5% 48px;background:linear-gradient(to bottom,var(--bg2),var(--bg));border-bottom:1px solid var(--border2)}
+.page-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:700;margin-bottom:.5rem}
+.page-hero h1 span{color:var(--gold)}
+.page-hero p{color:var(--text2);font-size:.95rem}
+
+/* SEARCH + FILTERS */
+.search-bar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:18px 5%;position:sticky;top:68px;z-index:50}
+.search-inner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;max-width:1200px;margin:0 auto}
+.search-field{flex:1;min-width:220px;position:relative}
+.search-field input{width:100%;padding:12px 18px 12px 44px;border-radius:9px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.search-field input:focus{border-color:var(--border)}
+.search-field input::placeholder{color:var(--text3)}
+.search-field .ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none}
+.filter-select{padding:12px 16px;border-radius:9px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-size:.87rem;font-family:'DM Sans',sans-serif;cursor:pointer;outline:none;appearance:none;padding-right:32px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236A6880' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;transition:border-color .2s}
+.filter-select:focus{border-color:var(--border)}
+.results-count{font-size:.82rem;color:var(--text3);white-space:nowrap}
+
+/* FILTER PILLS */
+.filter-pills{padding:14px 5%;background:var(--bg2);border-bottom:1px solid var(--border2);position:sticky;top:120px;z-index:49;overflow-x:auto}
+.pills-inner{display:flex;gap:8px;max-width:1200px;margin:0 auto}
+.pill{padding:6px 14px;border-radius:50px;border:1px solid var(--border2);font-size:.8rem;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .2s;background:transparent}
+.pill:hover{border-color:var(--border);color:var(--text)}
+.pill.active{background:var(--gold-pale);border-color:var(--border);color:var(--gold);font-weight:600}
+
+/* SONGS LIST */
+.browse-layout{display:grid;grid-template-columns:1fr;gap:0;max-width:1200px;margin:0 auto;padding:28px 5%}
+.songs-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.song-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;text-decoration:none;color:inherit}
+.song-card::after{content:'';position:absolute;left:0;top:0;width:3px;height:0;background:linear-gradient(to bottom,var(--gold),var(--gold-light));transition:height .25s;border-radius:0 0 0 14px}
+.song-card:hover{border-color:rgba(201,168,76,.25);background:var(--bg3);transform:translateX(3px)}
+.song-card:hover::after{height:100%}
+.song-num{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--text3);min-width:26px}
+.song-info{flex:1;min-width:0}
+.song-title{font-weight:500;font-size:.9rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-artist{font-size:.75rem;color:var(--text3);margin-top:2px}
+.song-badges{display:flex;gap:4px;margin-top:.35rem;flex-wrap:wrap}
+.song-arrow{color:var(--text3);transition:transform .22s;flex-shrink:0}
+.song-card:hover .song-arrow{transform:translateX(3px);color:var(--gold)}
+.song-views{font-size:.72rem;color:var(--text3);margin-left:auto;flex-shrink:0;padding-right:4px}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:80px 20px;color:var(--text3)}
+.empty .ico{font-size:3rem;margin-bottom:1rem;opacity:.4}
+.empty h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--text2);margin-bottom:.5rem}
+
+/* LOAD MORE */
+.load-more-wrap{text-align:center;padding:2rem 0}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="browse.html" class="active">Browse</a>
+    <a href="browse.html?filter=piano">Piano</a>
+    <a href="browse.html?filter=guitar">Guitar</a>
+    <a href="browse.html?filter=artists">Artists</a>
+  </div>
+  <div class="nav-btns">
+    <button class="btn btn-outline">Login</button>
+    <button class="btn btn-gold">Register Free</button>
+  </div>
+</nav>
+
+<div class="page-hero">
+  <h1>Browse <span>All Songs</span></h1>
+  <p>5,000+ Sinhala music notations — search, filter and play.</p>
+</div>
+
+<!-- SEARCH + FILTERS -->
+<div class="search-bar">
+  <div class="search-inner">
+    <div class="search-field">
+      <span class="ico">🔍</span>
+      <input id="searchInput" type="text" placeholder="Search songs or artists…" autocomplete="off"/>
+    </div>
+    <select class="filter-select" id="instrFilter">
+      <option value="">All Instruments</option>
+      <option value="piano">🎹 Piano</option>
+      <option value="guitar">🎸 Guitar</option>
+      <option value="violin">🎻 Violin</option>
+      <option value="flute">🪗 Flute</option>
+    </select>
+    <select class="filter-select" id="diffFilter">
+      <option value="">All Levels</option>
+      <option value="easy">Easy</option>
+      <option value="medium">Medium</option>
+      <option value="hard">Hard</option>
+    </select>
+    <select class="filter-select" id="sortFilter">
+      <option value="popular">Most Popular</option>
+      <option value="az">A → Z</option>
+      <option value="za">Z → A</option>
+      <option value="likes">Most Liked</option>
+    </select>
+    <span class="results-count" id="resultsCount">24 songs</span>
+  </div>
+</div>
+
+<div class="filter-pills">
+  <div class="pills-inner">
+    <button class="pill active" data-pill="all">All Songs</button>
+    <button class="pill" data-pill="piano">🎹 Piano</button>
+    <button class="pill" data-pill="guitar">🎸 Guitar</button>
+    <button class="pill" data-pill="violin">🎻 Violin</button>
+    <button class="pill" data-pill="easy">Easy</button>
+    <button class="pill" data-pill="medium">Medium</button>
+    <button class="pill" data-pill="hard">Hard</button>
+    <button class="pill" data-pill="Traditional">Traditional</button>
+    <button class="pill" data-pill="Classical">Classical</button>
+    <button class="pill" data-pill="Ballad">Ballad</button>
+    <button class="pill" data-pill="Pop">Pop</button>
+    <button class="pill" data-pill="Rock">Rock</button>
+  </div>
+</div>
+
+<div class="browse-layout">
+  <div class="songs-list" id="songsList"></div>
+  <div class="load-more-wrap">
+    <button class="btn btn-outline" id="loadMoreBtn" style="padding:11px 30px;font-size:.9rem" onclick="loadMore()">Load More Songs</button>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a><p>Sri Lanka's largest free Sinhala music notation portal.</p></div>
+    <div class="footer-col"><h4>Browse</h4><a href="browse.html?filter=piano">Piano</a><a href="browse.html?filter=guitar">Guitar</a><a href="browse.html?filter=violin">Violin</a></div>
+    <div class="footer-col"><h4>Community</h4><a href="#">Submit</a><a href="#">Request</a><a href="#">About</a></div>
+    <div class="footer-col"><h4>Links</h4><a href="index.html">Home</a><a href="#">Contact</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2025 SwaraLanka 🇱🇰 Free for all musicians</p></div>
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+let filtered=[], page=0, perPage=12;
+
+function getFilters(){
+  return{
+    q:document.getElementById('searchInput').value.toLowerCase(),
+    instr:document.getElementById('instrFilter').value,
+    diff:document.getElementById('diffFilter').value,
+    sort:document.getElementById('sortFilter').value,
+    pill:document.querySelector('.pill.active')?.dataset.pill||'all'
+  };
+}
+
+function applyFilters(){
+  const f=getFilters();
+  filtered=SONGS.filter(s=>{
+    if(f.q && !s.title.toLowerCase().includes(f.q) && !s.artist.toLowerCase().includes(f.q)) return false;
+    if(f.instr && !s.instruments.includes(f.instr)) return false;
+    if(f.diff && s.difficulty!==f.diff) return false;
+    if(f.pill==='piano'&&!s.instruments.includes('piano')) return false;
+    if(f.pill==='guitar'&&!s.instruments.includes('guitar')) return false;
+    if(f.pill==='violin'&&!s.instruments.includes('violin')) return false;
+    if(f.pill==='easy'&&s.difficulty!=='easy') return false;
+    if(f.pill==='medium'&&s.difficulty!=='medium') return false;
+    if(f.pill==='hard'&&s.difficulty!=='hard') return false;
+    if(['Traditional','Classical','Ballad','Pop','Rock'].includes(f.pill)&&s.genre!==f.pill) return false;
+    return true;
+  });
+  if(f.sort==='az') filtered.sort((a,b)=>a.title.localeCompare(b.title));
+  else if(f.sort==='za') filtered.sort((a,b)=>b.title.localeCompare(a.title));
+  else if(f.sort==='likes') filtered.sort((a,b)=>b.likes-a.likes);
+  else filtered.sort((a,b)=>b.views-a.views);
+  page=0;
+  document.getElementById('resultCount').textContent=filtered.length+' songs';
+  document.getElementById('resultsCount').textContent=filtered.length+' songs';
+  renderSongs(true);
+}
+
+function renderSongs(reset){
+  const list=document.getElementById('songsList');
+  if(reset) list.innerHTML='';
+  const slice=filtered.slice(page*perPage,(page+1)*perPage);
+  slice.forEach((s,i)=>{
+    const num=page*perPage+i+1;
+    list.innerHTML+=`<a class="song-card" href="song.html?id=${s.id}">
+      <span class="song-num">${String(num).padStart(2,'0')}</span>
+      <div class="song-info">
+        <div class="song-title">${s.title}</div>
+        <div class="song-artist">${s.artist}</div>
+        <div class="song-badges">${s.instruments.map(instrBadge).join('')}${diffBadge(s.difficulty)}</div>
+      </div>
+      <span class="song-views">👁 ${s.views.toLocaleString()}</span>
+      <span class="song-arrow">›</span>
+    </a>`;
+  });
+  document.getElementById('loadMoreBtn').style.display=((page+1)*perPage>=filtered.length)?'none':'inline-block';
+}
+
+function loadMore(){page++;renderSongs(false);}
+
+// Pills
+document.querySelectorAll('.pill').forEach(p=>p.addEventListener('click',()=>{
+  document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));
+  p.classList.add('active');applyFilters();
+}));
+
+// Inputs
+['searchInput','instrFilter','diffFilter','sortFilter'].forEach(id=>
+  document.getElementById(id).addEventListener('input',applyFilters)
+);
+
+// URL params
+const params=new URLSearchParams(location.search);
+if(params.get('q')) document.getElementById('searchInput').value=params.get('q');
+if(params.get('filter')){
+  const f=params.get('filter');
+  const pill=document.querySelector(`[data-pill="${f}"]`);
+  if(pill){document.querySelectorAll('.pill').forEach(x=>x.classList.remove('active'));pill.classList.add('active');}
+  const sel=document.getElementById('instrFilter');
+  if([...sel.options].some(o=>o.value===f)) sel.value=f;
+}
+
+// Fake result count for UI
+document.getElementById('resultCount') || document.getElementById('resultsCount');
+
+applyFilters();
+</script>
+</body>
+</html>

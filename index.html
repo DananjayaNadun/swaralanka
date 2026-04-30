@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwaraLanka — Sri Lanka's #1 Free Sinhala Music Notation Site</title>
+<meta name="description" content="Sri Lanka's largest free Sinhala music notation portal. Find piano, guitar, violin & flute notations for thousands of Sinhala songs.">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ── HERO ── */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:90px 5% 60px;position:relative;overflow:hidden}
+.hero-glow{position:absolute;inset:0;background:radial-gradient(ellipse 80% 55% at 50% 30%,rgba(201,168,76,.08) 0%,transparent 70%),radial-gradient(ellipse 55% 70% at 80% 70%,rgba(108,99,255,.05) 0%,transparent 60%);pointer-events:none}
+.notes-canvas{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.float-note{position:absolute;opacity:0;color:var(--gold);animation:floatNote linear infinite}
+@keyframes floatNote{0%{transform:translateY(110vh) rotate(0deg);opacity:0}10%{opacity:.3}90%{opacity:.18}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:var(--gold-pale);border:1px solid var(--border);border-radius:50px;padding:6px 16px;font-size:.78rem;color:var(--gold);margin-bottom:1.8rem;animation:fadeUp .8s ease both}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,7vw,5.2rem);font-weight:700;line-height:1.08;margin-bottom:1.3rem;animation:fadeUp .8s .12s ease both}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero-sub{font-size:1.05rem;color:var(--text2);max-width:540px;margin:0 auto 2.2rem;font-weight:300;animation:fadeUp .8s .22s ease both}
+.search-wrap{width:100%;max-width:620px;position:relative;margin-bottom:1.6rem;animation:fadeUp .8s .32s ease both}
+.search-wrap input{width:100%;padding:17px 22px 17px 52px;border-radius:50px;background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text);font-size:.98rem;font-family:'DM Sans',sans-serif;backdrop-filter:blur(12px);outline:none;transition:all .28s}
+.search-wrap input::placeholder{color:var(--text3)}
+.search-wrap input:focus{border-color:var(--gold);background:rgba(201,168,76,.04)}
+.search-wrap .s-ico{position:absolute;left:19px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:1rem;pointer-events:none}
+.search-wrap .s-btn{position:absolute;right:7px;top:50%;transform:translateY(-50%);background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;border-radius:50px;padding:9px 20px;color:#0B0C18;font-weight:700;font-size:.87rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:transform .2s}
+.search-wrap .s-btn:hover{transform:translateY(-50%) scale(1.04)}
+.quick-tags{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;animation:fadeUp .8s .4s ease both}
+.qtag{background:var(--bg2);border:1px solid var(--border2);border-radius:50px;padding:5px 13px;font-size:.78rem;color:var(--text2);cursor:pointer;transition:all .22s}
+.qtag:hover{border-color:var(--border);color:var(--gold)}
+.hero-stats{display:flex;gap:2.5rem;margin-top:3rem;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .48s ease both}
+.hstat .num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--gold);display:block;line-height:1}
+.hstat .lbl{font-size:.76rem;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;margin-top:.3rem}
+
+/* ── STATS BAR ── */
+.stats-bar{background:var(--bg2);border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);padding:26px 5%;display:flex;justify-content:center;gap:4rem;flex-wrap:wrap}
+.stat-item{text-align:center}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--gold);display:block;line-height:1}
+.stat-lbl{font-size:.76rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-top:.35rem;display:block}
+
+/* ── INSTRUMENTS ── */
+.instrument-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.instr-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:26px 14px 20px;text-align:center;cursor:pointer;transition:all .28s;position:relative;overflow:hidden;text-decoration:none;display:block}
+.instr-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-pale),transparent);opacity:0;transition:opacity .28s}
+.instr-card:hover{border-color:rgba(201,168,76,.4);transform:translateY(-4px);box-shadow:0 14px 36px rgba(0,0,0,.3)}
+.instr-card:hover::before{opacity:1}
+.instr-ico{font-size:2rem;margin-bottom:.65rem;display:block}
+.instr-name{font-size:.9rem;font-weight:500;color:var(--text)}
+.instr-count{font-size:.75rem;color:var(--text3);margin-top:.25rem}
+
+/* ── SONGS GRID ── */
+.songs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.song-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:18px 20px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .28s;position:relative;overflow:hidden;text-decoration:none;color:inherit}
+.song-card::after{content:'';position:absolute;left:0;top:0;width:3px;height:0;background:linear-gradient(to bottom,var(--gold),var(--gold-light));transition:height .28s;border-radius:0 0 0 14px}
+.song-card:hover{border-color:rgba(201,168,76,.25);background:var(--bg3);transform:translateX(3px)}
+.song-card:hover::after{height:100%}
+.song-num{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:700;color:var(--text3);min-width:28px}
+.song-info{flex:1;min-width:0}
+.song-title{font-weight:500;font-size:.92rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-artist{font-size:.77rem;color:var(--text3);margin-top:2px}
+.song-badges{display:flex;gap:5px;margin-top:.4rem;flex-wrap:wrap}
+.song-arrow{color:var(--text3);transition:transform .22s;flex-shrink:0}
+.song-card:hover .song-arrow{transform:translateX(3px);color:var(--gold)}
+
+/* ── NOTATION DEMO ── */
+.demo-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;max-width:1100px;margin:0 auto}
+.demo-features{display:flex;flex-direction:column;gap:10px;margin-top:1.2rem}
+.demo-feat{display:flex;align-items:center;gap:10px;color:var(--text2);font-size:.88rem}
+.demo-feat span:first-child{color:var(--gold)}
+.notation-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.notation-header{background:var(--bg4);padding:14px 18px;border-bottom:1px solid var(--border2);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.notation-header .song-ttl{font-weight:600;font-size:.92rem}
+.notation-header .song-meta{font-size:.75rem;color:var(--text3);margin-top:2px}
+.notation-body{padding:18px}
+.note-section-lbl{font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.note-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
+.note{display:inline-block;padding:4px 10px;border-radius:6px;font-size:.85rem;font-weight:700;font-family:'DM Sans',sans-serif}
+.note-c{background:#1a2a1a;color:#4ade80}.note-d{background:#1a1a2a;color:#818cf8}
+.note-e{background:#2a1a1a;color:#f87171}.note-f{background:#2a2a1a;color:#fbbf24}
+.note-g{background:#1a2a2a;color:#38bdf8}.note-a{background:#2a1a2a;color:#e879f9}
+.note-b{background:#2a2218;color:#fb923c}.note-rest{background:#1e1e28;color:#6b7280}
+.note-lyric{font-size:.72rem;color:var(--text3);margin:2px 0 10px 2px;font-family:'DM Sans',sans-serif}
+.notation-footer{border-top:1px solid var(--border2);padding:14px 18px;display:flex;gap:8px}
+.notation-footer .btn{flex:1;padding:9px;font-size:.83rem;text-align:center}
+
+/* ── FEATURES ── */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+.feature-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:28px 24px;transition:all .28s}
+.feature-card:hover{border-color:rgba(201,168,76,.25);transform:translateY(-3px);box-shadow:0 18px 44px rgba(0,0,0,.28)}
+.feat-icon{width:48px;height:48px;background:var(--gold-pale);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:1rem;border:1px solid var(--border)}
+.feat-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;margin-bottom:.5rem}
+.feat-desc{color:var(--text2);font-size:.87rem;line-height:1.65}
+
+/* ── COMPARE ── */
+.compare-wrap{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;max-width:780px;margin:0 auto}
+.compare-head{display:grid;grid-template-columns:2fr 1fr 1fr;background:var(--bg3);padding:14px 18px;gap:8px;border-bottom:1px solid var(--border2)}
+.compare-head .us{color:var(--gold);font-weight:700;font-size:.88rem}
+.compare-head span{font-size:.88rem;color:var(--text2)}
+.cmp-row{display:grid;grid-template-columns:2fr 1fr 1fr;padding:12px 18px;gap:8px;border-bottom:1px solid var(--border2);font-size:.88rem;transition:background .2s}
+.cmp-row:last-child{border:none}
+.cmp-row:hover{background:rgba(255,255,255,.025)}
+.cmp-row .feat-name{color:var(--text2)}
+.cmp-row .us-val{color:var(--gold);font-weight:500}
+.cy{color:var(--green)}.cn{color:var(--text3)}
+
+/* ── CTA ── */
+.cta-section{padding:90px 5%;text-align:center;position:relative;overflow:hidden}
+.cta-glow{position:absolute;inset:0;background:radial-gradient(ellipse 65% 65% at 50% 50%,rgba(201,168,76,.06) 0%,transparent 70%)}
+.cta-inner{position:relative;max-width:640px;margin:0 auto}
+.cta-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:700;line-height:1.15;margin-bottom:1rem}
+.cta-sub{color:var(--text2);margin-bottom:2.2rem;font-size:1rem}
+.cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-lg{padding:13px 30px;font-size:.95rem;border-radius:10px}
+
+@media(max-width:760px){.demo-grid{grid-template-columns:1fr}.hero-stats{gap:1.5rem}.stats-bar{gap:2rem}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html">
+    <div class="logo-icon">🎵</div>
+    <div class="logo-text">Swara<span>Lanka</span></div>
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="browse.html">Browse</a>
+    <a href="browse.html?filter=piano">Piano</a>
+    <a href="browse.html?filter=guitar">Guitar</a>
+    <a href="browse.html?filter=artists">Artists</a>
+  </div>
+  <div class="nav-btns">
+    <button class="btn btn-outline">Login</button>
+    <button class="btn btn-gold">Register Free</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="notes-canvas" id="notesCanvas"></div>
+
+  <div class="hero-badge">★ Sri Lanka's #1 Free Music Notation Portal</div>
+  <h1>Play Every<br><em>Sinhala Song</em><br>You Love</h1>
+  <p class="hero-sub">The largest collection of free Sinhala music notations — piano, guitar, violin, flute and more. 100% free. Forever.</p>
+
+  <div class="search-wrap">
+    <span class="s-ico">🔍</span>
+    <input id="heroSearch" type="text" placeholder="Search songs, artists, instruments…" autocomplete="off"/>
+    <button class="s-btn" onclick="doSearch()">Search</button>
+  </div>
+
+  <div class="quick-tags">
+    <span class="qtag" onclick="setSearch('Amaradeva')">Amaradeva</span>
+    <span class="qtag" onclick="setSearch('Clarence Wijewardene')">Clarence Wijewardene</span>
+    <span class="qtag" onclick="setSearch('Rookantha')">Rookantha</span>
+    <span class="qtag" onclick="setSearch('Victor Rathnayake')">Victor Rathnayake</span>
+    <span class="qtag" onclick="setSearch('Sanath Nandasiri')">Sanath Nandasiri</span>
+    <span class="qtag" onclick="window.location='browse.html?filter=piano'">Piano</span>
+    <span class="qtag" onclick="window.location='browse.html?filter=easy'">Easy Level</span>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hstat"><span class="num" data-target="5000">0</span><span class="lbl">Notations</span></div>
+    <div class="hstat"><span class="num" data-target="1200">0</span><span class="lbl">Artists</span></div>
+    <div class="hstat"><span class="num" data-target="8">0</span><span class="lbl">Instruments</span></div>
+    <div class="hstat"><span class="num" data-target="50000">0</span><span class="lbl">Users</span></div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-num">5,000+</span><span class="stat-lbl">Songs</span></div>
+  <div class="stat-item"><span class="stat-num">8</span><span class="stat-lbl">Instruments</span></div>
+  <div class="stat-item"><span class="stat-num">100%</span><span class="stat-lbl">Free Forever</span></div>
+  <div class="stat-item"><span class="stat-num">3</span><span class="stat-lbl">Difficulty Levels</span></div>
+  <div class="stat-item"><span class="stat-num">Daily</span><span class="stat-lbl">New Songs</span></div>
+</div>
+
+<!-- INSTRUMENTS -->
+<section class="section" id="instruments">
+  <div style="text-align:center;margin-bottom:3rem" class="reveal">
+    <p class="section-eyebrow">Browse by Instrument</p>
+    <h2 class="section-title">One Song, <span>Every Instrument</span></h2>
+    <p class="section-sub">Find notations for whatever you play — all in one place.</p>
+  </div>
+  <div class="instrument-grid reveal">
+    <a class="instr-card" href="browse.html?filter=piano"><span class="instr-ico">🎹</span><div class="instr-name">Piano / Keyboard</div><div class="instr-count">2,340 songs</div></a>
+    <a class="instr-card" href="browse.html?filter=guitar"><span class="instr-ico">🎸</span><div class="instr-name">Guitar</div><div class="instr-count">1,890 songs</div></a>
+    <a class="instr-card" href="browse.html?filter=violin"><span class="instr-ico">🎻</span><div class="instr-name">Violin</div><div class="instr-count">680 songs</div></a>
+    <a class="instr-card" href="browse.html?filter=flute"><span class="instr-ico">🪗</span><div class="instr-name">Flute</div><div class="instr-count">540 songs</div></a>
+    <a class="instr-card" href="browse.html"><span class="instr-ico">🥁</span><div class="instr-name">Drums</div><div class="instr-count">390 songs</div></a>
+    <a class="instr-card" href="browse.html"><span class="instr-ico">🎺</span><div class="instr-name">Trumpet</div><div class="instr-count">210 songs</div></a>
+    <a class="instr-card" href="browse.html"><span class="instr-ico">🪘</span><div class="instr-name">Traditional</div><div class="instr-count">420 songs</div></a>
+    <a class="instr-card" href="browse.html"><span class="instr-ico">🎙️</span><div class="instr-name">Vocal</div><div class="instr-count">1,100 songs</div></a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- NOTATION DEMO -->
+<section class="section">
+  <div class="demo-grid">
+    <div class="reveal">
+      <p class="section-eyebrow">Clean Notations</p>
+      <h2 class="section-title" style="text-align:left">Beautiful,<br><span>Readable</span> Notations</h2>
+      <p style="color:var(--text2);margin-top:.8rem;font-size:.92rem;line-height:1.8">Every notation is carefully formatted with colour-coded notes, lyrics, chords, and difficulty indicators. No blurry PDFs, no confusing symbols.</p>
+      <div class="demo-features">
+        <div class="demo-feat"><span>✦</span><span>Colour-coded notes for easy reading</span></div>
+        <div class="demo-feat"><span>✦</span><span>Lyrics synced with notation</span></div>
+        <div class="demo-feat"><span>✦</span><span>Key, tempo and chord details</span></div>
+        <div class="demo-feat"><span>✦</span><span>Printable &amp; mobile-friendly</span></div>
+        <div class="demo-feat"><span>✦</span><span>Free PDF download</span></div>
+      </div>
+      <a href="song.html" style="margin-top:1.5rem;display:inline-block"><button class="btn btn-gold" style="padding:11px 24px">View Full Notation →</button></a>
+    </div>
+    <div class="reveal">
+      <div class="notation-box">
+        <div class="notation-header">
+          <div><div class="song-ttl">Danno Budunge</div><div class="song-meta">Traditional · Key: C Major · 4/4 · Easy</div></div>
+          <div style="display:flex;gap:5px"><span class="badge badge-piano">Piano</span><span class="badge badge-easy">Easy</span></div>
+        </div>
+        <div class="notation-body">
+          <div class="note-section-lbl">Intro</div>
+          <div class="note-row"><span class="note note-c">C</span><span class="note note-c">C</span><span class="note note-e">E</span><span class="note note-g">G</span><span class="note note-e">E</span><span class="note note-c">C</span><span class="note note-rest">–</span></div>
+          <div class="note-section-lbl" style="margin-top:12px">Verse</div>
+          <div class="note-row"><span class="note note-g">G</span><span class="note note-a">A</span><span class="note note-g">G</span><span class="note note-e">E</span><span class="note note-d">D</span><span class="note note-c">C</span><span class="note note-rest">–</span></div>
+          <div class="note-lyric">Dan - no  Bu - dun - ge</div>
+          <div class="note-row"><span class="note note-f">F</span><span class="note note-e">E</span><span class="note note-f">F</span><span class="note note-g">G</span><span class="note note-a">A</span><span class="note note-rest">–</span></div>
+          <div class="note-lyric">Si - tha - la  ge</div>
+        </div>
+        <div class="notation-footer">
+          <button class="btn btn-gold">🖨 Print</button>
+          <a href="song.html" style="flex:1"><button class="btn btn-outline" style="width:100%">View Full →</button></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- POPULAR SONGS -->
+<section class="section" id="browse">
+  <div style="text-align:center;margin-bottom:3rem" class="reveal">
+    <p class="section-eyebrow">Top Picks</p>
+    <h2 class="section-title">Most <span>Popular</span> Notations</h2>
+    <p class="section-sub">From timeless classics to the latest Sinhala hits.</p>
+  </div>
+  <div class="songs-grid reveal" id="popularSongs"></div>
+  <div style="text-align:center;margin-top:2rem" class="reveal">
+    <a href="browse.html"><button class="btn btn-outline" style="padding:12px 32px;font-size:.9rem">View All 5,000+ Songs →</button></a>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FEATURES -->
+<section class="section">
+  <div style="text-align:center;margin-bottom:3rem" class="reveal">
+    <p class="section-eyebrow">Why SwaraLanka?</p>
+    <h2 class="section-title">Built for <span>Sri Lankan</span> Musicians</h2>
+    <p class="section-sub">Everything NotesLanka doesn't have — all for free.</p>
+  </div>
+  <div class="features-grid reveal">
+    <div class="feature-card"><div class="feat-icon">🎹</div><h3 class="feat-title">Multi-Instrument</h3><p class="feat-desc">Piano, Guitar, Violin, Flute and more. One song, every instrument — no other Sinhala site does this.</p></div>
+    <div class="feature-card"><div class="feat-icon">🔍</div><h3 class="feat-title">Advanced Search</h3><p class="feat-desc">Filter by song, artist, instrument, key, difficulty and genre. Find exactly what you need in seconds.</p></div>
+    <div class="feature-card"><div class="feat-icon">👥</div><h3 class="feat-title">Community</h3><p class="feat-desc">Any musician can submit notations. Request a song and the community delivers — growing every day.</p></div>
+    <div class="feature-card"><div class="feat-icon">📱</div><h3 class="feat-title">Mobile-First</h3><p class="feat-desc">Practice anywhere. Fully responsive — works perfectly on your phone while you're at the keyboard.</p></div>
+    <div class="feature-card"><div class="feat-icon">🆓</div><h3 class="feat-title">Free. Always.</h3><p class="feat-desc">No subscriptions, no paywalls, no ads. Everything on SwaraLanka is free for every Sri Lankan musician.</p></div>
+    <div class="feature-card"><div class="feat-icon">🎓</div><h3 class="feat-title">Difficulty Levels</h3><p class="feat-desc">Beginner, Intermediate and Advanced levels clearly marked. Learn at your own pace.</p></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COMPARE -->
+<section class="section">
+  <div style="text-align:center;margin-bottom:2.5rem" class="reveal">
+    <p class="section-eyebrow">The Difference</p>
+    <h2 class="section-title">SwaraLanka <span>vs</span> The Rest</h2>
+  </div>
+  <div class="compare-wrap reveal">
+    <div class="compare-head"><span style="color:var(--text2)">Feature</span><span class="us">✦ SwaraLanka</span><span>NotesLanka</span></div>
+    <div class="cmp-row"><span class="feat-name">Total Songs</span><span class="us-val">5,000+</span><span style="color:var(--text3)">~200</span></div>
+    <div class="cmp-row"><span class="feat-name">Multiple Instruments</span><span class="cy">✓</span><span class="cn">✗</span></div>
+    <div class="cmp-row"><span class="feat-name">Advanced Search & Filters</span><span class="cy">✓</span><span class="cn">✗</span></div>
+    <div class="cmp-row"><span class="feat-name">Community Submissions</span><span class="cy">✓</span><span class="cn">✗</span></div>
+    <div class="cmp-row"><span class="feat-name">Difficulty Levels</span><span class="cy">✓</span><span class="cn">✗</span></div>
+    <div class="cmp-row"><span class="feat-name">Mobile-Friendly Design</span><span class="cy">✓</span><span class="cn">✗</span></div>
+    <div class="cmp-row"><span class="feat-name">PDF Download</span><span class="cy">✓</span><span class="cy">✓</span></div>
+    <div class="cmp-row"><span class="feat-name">Solfège Support</span><span class="cy">✓</span><span class="cn">✗</span></div>
+    <div class="cmp-row"><span class="feat-name">Completely Free</span><span class="cy">✓</span><span class="cy">✓</span></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-glow"></div>
+  <div class="cta-inner reveal">
+    <p class="section-eyebrow">Join SwaraLanka</p>
+    <h2 class="cta-title">Sri Lanka's Music<br><em style="color:var(--gold);font-family:'Cormorant Garamond',serif">Belongs to Everyone</em></h2>
+    <p class="cta-sub">Join thousands of Sri Lankan musicians. Create a free account to save favourites, request songs, and contribute notations.</p>
+    <div class="cta-btns">
+      <button class="btn btn-gold btn-lg">Create Free Account</button>
+      <a href="browse.html"><button class="btn btn-outline btn-lg">Browse Songs</button></a>
+    </div>
+    <p style="color:var(--text3);font-size:.78rem;margin-top:1.2rem">No credit card. No spam. Just music. 🎵</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a>
+      <p>Sri Lanka's largest free Sinhala music notation portal. Built with love for every Sri Lankan musician.</p>
+    </div>
+    <div class="footer-col"><h4>Browse</h4><a href="browse.html?filter=piano">Piano Notations</a><a href="browse.html?filter=guitar">Guitar Chords</a><a href="browse.html?filter=violin">Violin Notes</a><a href="browse.html?filter=flute">Flute Notes</a></div>
+    <div class="footer-col"><h4>Discover</h4><a href="browse.html">New Additions</a><a href="browse.html">Top Songs</a><a href="browse.html">Browse Artists</a><a href="browse.html?filter=easy">Beginner Songs</a></div>
+    <div class="footer-col"><h4>Community</h4><a href="#">Submit Notation</a><a href="#">Request a Song</a><a href="#">About SwaraLanka</a><a href="#">Contact Us</a></div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 SwaraLanka · Free for all Sri Lankan musicians 🇱🇰</p>
+    <div class="social-links">
+      <a class="social-link" href="#">f</a>
+      <a class="social-link" href="#">in</a>
+      <a class="social-link" href="#">yt</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+// Floating notes
+const canvas=document.getElementById('notesCanvas');
+['♩','♪','♫','♬','𝄞','𝄢'].forEach((c,i)=>{
+  for(let j=0;j<4;j++){
+    const n=document.createElement('div');n.className='float-note';n.textContent=c;
+    n.style.left=Math.random()*100+'%';n.style.animationDuration=(14+Math.random()*16)+'s';
+    n.style.animationDelay=(Math.random()*20)+'s';n.style.fontSize=(.7+Math.random()*.8)+'rem';
+    canvas.appendChild(n);
+  }
+});
+
+// Counter animation
+function countUp(el,target){
+  const dur=1800,start=performance.now();
+  const tick=now=>{
+    const t=Math.min((now-start)/dur,1),ease=1-Math.pow(1-t,3),v=Math.floor(ease*target);
+    el.textContent=v>=1000?(v>=10000?(v/1000).toFixed(0)+'K':(v/1000).toFixed(1)+'K'):v;
+    if(t<1)requestAnimationFrame(tick);
+    else el.textContent=target>=10000?(target/1000).toFixed(0)+'K':target>=1000?(target/1000).toFixed(1)+'K':target;
+  };requestAnimationFrame(tick);
+}
+setTimeout(()=>document.querySelectorAll('.hstat .num').forEach(el=>countUp(el,+el.dataset.target)),500);
+
+// Reveal on scroll
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Popular songs
+const grid=document.getElementById('popularSongs');
+SONGS.slice(0,12).forEach((s,i)=>{
+  grid.innerHTML+=`<a class="song-card" href="song.html?id=${s.id}">
+    <span class="song-num">${String(i+1).padStart(2,'0')}</span>
+    <div class="song-info">
+      <div class="song-title">${s.title}</div>
+      <div class="song-artist">${s.artist}</div>
+      <div class="song-badges">${s.instruments.map(instrBadge).join('')}${diffBadge(s.difficulty)}</div>
+    </div>
+    <span class="song-arrow">›</span>
+  </a>`;
+});
+
+// Search
+function setSearch(q){document.getElementById('heroSearch').value=q}
+function doSearch(){
+  const q=document.getElementById('heroSearch').value.trim();
+  if(q)window.location=`browse.html?q=${encodeURIComponent(q)}`;
+}
+document.getElementById('heroSearch').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
+</script>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Song Notation — SwaraLanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.song-page{padding:90px 5% 40px;max-width:1100px;margin:0 auto}
+.breadcrumb{display:flex;align-items:center;gap:8px;font-size:.8rem;color:var(--text3);margin-bottom:1.5rem}
+.breadcrumb a{color:var(--text3);transition:color .2s}.breadcrumb a:hover{color:var(--gold)}
+.breadcrumb span{color:var(--text3)}
+
+.song-layout{display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start}
+
+/* MAIN */
+.song-main{min-width:0}
+.song-header{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:24px 26px;margin-bottom:20px}
+.song-header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.song-header h1{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;line-height:1.1}
+.song-header .artist{font-size:.9rem;color:var(--text3);margin-top:.3rem}
+.song-header-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:.9rem}
+.song-meta-row{display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border2)}
+.meta-item{font-size:.82rem;color:var(--text2)}.meta-item strong{color:var(--text);display:block;font-size:.85rem}
+.song-actions{display:flex;gap:8px;margin-top:1.2rem;flex-wrap:wrap}
+.song-actions .btn{padding:9px 18px;font-size:.85rem}
+
+/* INSTRUMENT TABS */
+.instr-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.itab{padding:8px 16px;border-radius:8px;border:1px solid var(--border2);font-size:.83rem;color:var(--text2);cursor:pointer;transition:all .2s;background:transparent;font-family:'DM Sans',sans-serif}
+.itab.active{background:var(--gold-pale);border-color:var(--border);color:var(--gold);font-weight:600}
+
+/* NOTATION AREA */
+.notation-area{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden}
+.notation-top-bar{background:var(--bg3);padding:12px 18px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.notation-top-bar span{font-size:.8rem;color:var(--text3)}
+.zoom-btns{display:flex;gap:6px}
+.zoom-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:.9rem;transition:all .2s;font-family:'DM Sans',sans-serif}
+.zoom-btn:hover{border-color:var(--border);color:var(--gold)}
+.notation-content{padding:22px}
+.section-block{margin-bottom:22px}
+.section-label{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border2)}
+.note-row{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px}
+.note{display:inline-block;padding:5px 12px;border-radius:7px;font-weight:700;font-family:'DM Sans',sans-serif;transition:transform .15s}
+.note:hover{transform:scale(1.08)}
+.note-c{background:#1a2a1a;color:#4ade80}.note-d{background:#1a1a2a;color:#818cf8}
+.note-e{background:#2a1a1a;color:#f87171}.note-f{background:#2a2a1a;color:#fbbf24}
+.note-g{background:#1a2a2a;color:#38bdf8}.note-a{background:#2a1a2a;color:#e879f9}
+.note-b{background:#2a2218;color:#fb923c}.note-rest{background:#1e1e28;color:#6b7280}
+.note-lyric{font-size:.75rem;color:var(--text3);margin:3px 0 12px 2px;letter-spacing:.05em}
+.font-sm .note{font-size:.78rem;padding:4px 9px}
+.font-lg .note{font-size:1rem;padding:7px 15px}
+
+/* SIDEBAR */
+.song-sidebar{display:flex;flex-direction:column;gap:14px}
+.sidebar-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:18px 20px}
+.sidebar-card h3{font-size:.82rem;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.like-btn{width:100%;padding:11px;border-radius:9px;background:transparent;border:1px solid var(--border2);color:var(--text2);font-size:.9rem;cursor:pointer;transition:all .25s;font-family:'DM Sans',sans-serif;font-weight:500}
+.like-btn:hover,.like-btn.liked{background:rgba(201,168,76,.12);border-color:var(--border);color:var(--gold)}
+.share-btn{width:100%;padding:10px;border-radius:9px;background:transparent;border:1px solid var(--border2);color:var(--text2);font-size:.87rem;cursor:pointer;transition:all .25s;font-family:'DM Sans',sans-serif;margin-top:6px}
+.share-btn:hover{border-color:var(--border);color:var(--text)}
+.related-list{display:flex;flex-direction:column;gap:8px}
+.related-item{display:flex;gap:10px;align-items:center;padding:8px;border-radius:8px;cursor:pointer;transition:background .2s;text-decoration:none;color:inherit}
+.related-item:hover{background:var(--bg3)}
+.related-num{font-size:.82rem;color:var(--text3);min-width:22px;font-family:'Cormorant Garamond',serif;font-weight:700}
+.related-info .rtitle{font-size:.83rem;color:var(--text)}
+.related-info .rartist{font-size:.73rem;color:var(--text3)}
+.stat-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border2);font-size:.83rem}
+.stat-row:last-child{border:none}
+.stat-row .lbl{color:var(--text3)}
+.stat-row .val{color:var(--text)}
+
+/* SOLFEGE TOGGLE */
+.notation-mode{display:flex;gap:6px;background:var(--bg3);padding:3px;border-radius:8px;border:1px solid var(--border2)}
+.nmode-btn{padding:5px 12px;border-radius:6px;border:none;background:transparent;color:var(--text3);font-size:.78rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.nmode-btn.active{background:var(--bg4);color:var(--text);font-weight:500}
+
+@media(max-width:860px){.song-layout{grid-template-columns:1fr}.song-sidebar{display:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="browse.html">Browse</a>
+    <a href="browse.html?filter=piano">Piano</a>
+    <a href="browse.html?filter=guitar">Guitar</a>
+  </div>
+  <div class="nav-btns">
+    <button class="btn btn-outline">Login</button>
+    <button class="btn btn-gold">Register Free</button>
+  </div>
+</nav>
+
+<div class="song-page">
+  <div class="breadcrumb">
+    <a href="index.html">Home</a>
+    <span>›</span>
+    <a href="browse.html">Browse</a>
+    <span>›</span>
+    <span id="breadcrumbTitle">Danno Budunge</span>
+  </div>
+
+  <div class="song-layout">
+    <!-- MAIN CONTENT -->
+    <div class="song-main">
+      <div class="song-header">
+        <div class="song-header-top">
+          <div>
+            <h1 id="songTitle">Danno Budunge</h1>
+            <div class="artist" id="songArtist">Traditional</div>
+          </div>
+          <div id="diffBadgeWrap"></div>
+        </div>
+        <div class="song-header-badges" id="instrBadges"></div>
+        <div class="song-meta-row">
+          <div class="meta-item"><strong id="metaKey">C Major</strong><span>Key</span></div>
+          <div class="meta-item"><strong id="metaTempo">Moderate</strong><span>Tempo</span></div>
+          <div class="meta-item"><strong>4/4</strong><span>Time</span></div>
+          <div class="meta-item"><strong id="metaGenre">Traditional</strong><span>Genre</span></div>
+          <div class="meta-item"><strong id="metaViews">4,820</strong><span>Views</span></div>
+        </div>
+        <div class="song-actions">
+          <button class="btn btn-gold" onclick="window.print()">🖨 Print</button>
+          <button class="btn btn-outline" onclick="alert('PDF download — connect Firebase to enable!')">📥 PDF</button>
+          <button class="btn btn-outline" onclick="toggleLike(this)">♡ Like</button>
+          <button class="btn btn-outline" onclick="alert('Sign in to save favourites!')">🔖 Save</button>
+        </div>
+      </div>
+
+      <!-- INSTRUMENT TABS -->
+      <div class="instr-tabs" id="instrTabs"></div>
+
+      <!-- NOTATION MODE TOGGLE + ZOOM -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+        <div class="notation-mode">
+          <button class="nmode-btn active" onclick="setMode('western',this)">Western (C D E)</button>
+          <button class="nmode-btn" onclick="setMode('solfege',this)">Solfège (Do Re Mi)</button>
+        </div>
+        <div class="zoom-btns">
+          <button class="zoom-btn" onclick="setFont('sm')">A−</button>
+          <button class="zoom-btn" onclick="setFont('md')">A</button>
+          <button class="zoom-btn" onclick="setFont('lg')">A+</button>
+        </div>
+      </div>
+
+      <!-- NOTATION -->
+      <div class="notation-area">
+        <div class="notation-top-bar">
+          <span id="notationLabel">Piano Notation — C Major</span>
+          <span id="viewCount">👁 4,820 views · ♥ 312 likes</span>
+        </div>
+        <div class="notation-content font-md" id="notationContent"></div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="song-sidebar">
+      <div class="sidebar-card">
+        <h3>Actions</h3>
+        <button class="like-btn" id="likeBtn" onclick="toggleLike(this)">♡ Like this notation (312)</button>
+        <button class="share-btn" onclick="copyLink()">🔗 Copy Link</button>
+        <button class="share-btn" onclick="alert('Sign in to save!')">🔖 Save to Favourites</button>
+      </div>
+      <div class="sidebar-card">
+        <h3>Song Info</h3>
+        <div class="stat-row"><span class="lbl">Key</span><span class="val" id="sideKey">C Major</span></div>
+        <div class="stat-row"><span class="lbl">Time</span><span class="val">4/4</span></div>
+        <div class="stat-row"><span class="lbl">Difficulty</span><span class="val" id="sideDiff">Easy</span></div>
+        <div class="stat-row"><span class="lbl">Genre</span><span class="val" id="sideGenre">Traditional</span></div>
+        <div class="stat-row"><span class="lbl">Views</span><span class="val" id="sideViews">4,820</span></div>
+      </div>
+      <div class="sidebar-card">
+        <h3>Related Songs</h3>
+        <div class="related-list" id="relatedList"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<footer style="margin-top:3rem">
+  <div class="footer-grid">
+    <div class="footer-brand"><a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a><p>Sri Lanka's largest free Sinhala music notation portal.</p></div>
+    <div class="footer-col"><h4>Browse</h4><a href="browse.html?filter=piano">Piano</a><a href="browse.html?filter=guitar">Guitar</a></div>
+    <div class="footer-col"><h4>Community</h4><a href="#">Submit</a><a href="#">Request</a></div>
+    <div class="footer-col"><h4>Links</h4><a href="index.html">Home</a><a href="browse.html">Browse</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2025 SwaraLanka 🇱🇰</p></div>
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+const params=new URLSearchParams(location.search);
+const id=parseInt(params.get('id'))||1;
+const song=SONGS.find(s=>s.id===id)||SONGS[0];
+
+// Fill header
+document.getElementById('songTitle').textContent=song.title;
+document.getElementById('breadcrumbTitle').textContent=song.title;
+document.getElementById('songArtist').textContent=song.artist;
+document.getElementById('diffBadgeWrap').innerHTML=diffBadge(song.difficulty);
+document.getElementById('instrBadges').innerHTML=song.instruments.map(instrBadge).join('');
+document.getElementById('metaKey').textContent=song.key;
+document.getElementById('metaGenre').textContent=song.genre;
+document.getElementById('metaViews').textContent=song.views.toLocaleString();
+document.getElementById('metaTempo').textContent=song.difficulty==='easy'?'Slow':song.difficulty==='medium'?'Moderate':'Fast';
+document.getElementById('sideKey').textContent=song.key;
+document.getElementById('sideDiff').textContent=song.difficulty.charAt(0).toUpperCase()+song.difficulty.slice(1);
+document.getElementById('sideGenre').textContent=song.genre;
+document.getElementById('sideViews').textContent=song.views.toLocaleString();
+document.getElementById('viewCount').textContent=`👁 ${song.views.toLocaleString()} views · ♥ ${song.likes} likes`;
+document.getElementById('likeBtn').textContent=`♡ Like this notation (${song.likes})`;
+document.title=`${song.title} — SwaraLanka`;
+
+// Instrument tabs
+const tabs=document.getElementById('instrTabs');
+song.instruments.forEach((instr,i)=>{
+  const btn=document.createElement('button');
+  btn.className='itab'+(i===0?' active':'');
+  const icos={piano:'🎹',guitar:'🎸',violin:'🎻',flute:'🪗'};
+  btn.textContent=(icos[instr]||'🎵')+' '+instr.charAt(0).toUpperCase()+instr.slice(1);
+  btn.onclick=()=>{document.querySelectorAll('.itab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderNotation(instr);};
+  tabs.appendChild(btn);
+});
+
+// Notation rendering
+let currentMode='western';
+const SOLFEGE={C:'Do',D:'Re',E:'Mi',F:'Fa',G:'Sol',A:'La',B:'Si','–':'–'};
+
+function renderNotation(instr){
+  document.getElementById('notationLabel').textContent=`${instr.charAt(0).toUpperCase()+instr.slice(1)} Notation — ${song.key}`;
+  const content=document.getElementById('notationContent');
+  content.innerHTML='';
+  const sections=[
+    {label:'Intro',rows:NOTATION.intro},
+    {label:'Verse 1',rows:NOTATION.verse},
+    {label:'Chorus',rows:NOTATION.chorus},
+    {label:'Verse 2',rows:NOTATION.verse.map(r=>({...r,lyric:r.lyric}))},
+    {label:'Outro',rows:NOTATION.intro}
+  ];
+  sections.forEach(sec=>{
+    const block=document.createElement('div');block.className='section-block';
+    block.innerHTML=`<div class="section-label">${sec.label}</div>`;
+    sec.rows.forEach(row=>{
+      const noteRow=document.createElement('div');noteRow.className='note-row';
+      row.notes.forEach(n=>{
+        const display=currentMode==='solfege'?SOLFEGE[n]||n:n;
+        noteRow.innerHTML+=`<span class="note ${getNoteClass(n)}">${display}</span>`;
+      });
+      block.appendChild(noteRow);
+      if(row.lyric){const l=document.createElement('div');l.className='note-lyric';l.textContent=row.lyric;block.appendChild(l);}
+    });
+    content.appendChild(block);
+  });
+}
+renderNotation(song.instruments[0]);
+
+function setMode(mode,btn){
+  currentMode=mode;
+  document.querySelectorAll('.nmode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderNotation(song.instruments[0]);
+}
+function setFont(size){
+  const c=document.getElementById('notationContent');
+  c.className=`notation-content font-${size}`;
+}
+function toggleLike(btn){
+  btn.classList.toggle('liked');
+  const liked=btn.classList.contains('liked');
+  if(btn.id==='likeBtn') btn.textContent=(liked?'♥ Liked! (':'♡ Like this notation (')+song.likes+(liked?'+1)':')');
+}
+function copyLink(){navigator.clipboard.writeText(location.href).then(()=>alert('Link copied!'));}
+
+// Related songs
+const related=SONGS.filter(s=>s.id!==song.id&&(s.artist===song.artist||s.instruments.some(i=>song.instruments.includes(i)))).slice(0,5);
+const relList=document.getElementById('relatedList');
+related.forEach((s,i)=>{
+  relList.innerHTML+=`<a class="related-item" href="song.html?id=${s.id}">
+    <span class="related-num">${i+1}</span>
+    <div class="related-info"><div class="rtitle">${s.title}</div><div class="rartist">${s.artist}</div></div>
+  </a>`;
+});
+</script>
+</body>
+</html>
