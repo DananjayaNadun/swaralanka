@@ -48,7 +48,7 @@
 ### Run Locally
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR-USERNAME/swaralanka.git
+git clone https://github.com/dananjayanadun/swaralanka.git
 
 # Open in browser
 cd swaralanka
