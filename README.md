@@ -5,7 +5,7 @@
 ![SwaraLanka](https://img.shields.io/badge/Status-Live-brightgreen) ![License](https://img.shields.io/badge/License-MIT-blue) ![Free](https://img.shields.io/badge/Cost-100%25%20Free-gold)
 
 ## 🌐 Live Demo
-👉 **[View Live on GitHub Pages](https://YOUR-USERNAME.github.io/swaralanka)**
+👉 **[View Live on GitHub Pages](https://dananjayanadun.github.io/swaralanka/)**
 
 ---
 
