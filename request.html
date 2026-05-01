@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Request a Song — SwaraLanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.req-page{max-width:1100px;margin:0 auto;padding:108px 5% 60px}
+.page-header{margin-bottom:2.5rem}
+.page-header h1{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:700}
+.page-header h1 span{color:var(--gold)}
+.page-header p{color:var(--text2);margin-top:.4rem}
+
+.req-layout{display:grid;grid-template-columns:380px 1fr;gap:28px;align-items:start}
+
+/* REQUEST FORM */
+.req-form-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:24px}
+.req-form-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;margin-bottom:1.2rem;display:flex;align-items:center;gap:8px}
+.req-form-title span{color:var(--gold)}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field label{font-size:.78rem;color:var(--text2);font-weight:500}
+.field label .req{color:var(--gold)}
+.field input,.field select,.field textarea{padding:11px 14px;border-radius:9px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--border)}
+.field input::placeholder,.field textarea::placeholder{color:var(--text3)}
+.req-submit-btn{width:100%;padding:12px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#0B0C18;font-size:.92rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .25s;margin-top:4px}
+.req-submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,168,76,.35)}
+.req-success{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:8px;padding:12px 14px;font-size:.85rem;color:#34D399;display:none;text-align:center;margin-bottom:14px}
+.req-success.show{display:block}
+
+/* REQUESTS LIST */
+.req-list-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden}
+.req-list-header{background:var(--bg3);padding:14px 20px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.req-list-header h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600}
+.req-sort{display:flex;gap:6px}
+.rsort-btn{padding:5px 12px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:.76rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.rsort-btn.active{background:var(--gold-pale);border-color:var(--border);color:var(--gold);font-weight:600}
+
+.req-item{padding:16px 20px;border-bottom:1px solid var(--border2);display:flex;gap:14px;align-items:flex-start;transition:background .2s}
+.req-item:last-child{border:none}
+.req-item:hover{background:rgba(255,255,255,.02)}
+.req-vote{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:44px}
+.vote-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s}
+.vote-btn:hover{border-color:var(--border);color:var(--gold)}
+.vote-btn.voted{background:var(--gold-pale);border-color:var(--border);color:var(--gold)}
+.vote-count{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--gold);line-height:1}
+.req-info{flex:1;min-width:0}
+.req-song-title{font-weight:500;font-size:.95rem;color:var(--text);margin-bottom:.2rem}
+.req-artist{font-size:.8rem;color:var(--text3)}
+.req-meta{display:flex;gap:10px;margin-top:.5rem;flex-wrap:wrap;align-items:center}
+.req-tag{font-size:.72rem;padding:2px 9px;border-radius:50px;border:1px solid var(--border2);color:var(--text3)}
+.req-status{font-size:.72rem;padding:2px 10px;border-radius:50px;font-weight:600}
+.req-status.pending{background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);color:#fbbf24}
+.req-status.inprogress{background:rgba(129,140,248,.1);border:1px solid rgba(129,140,248,.3);color:#818cf8}
+.req-status.done{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.3);color:#34D399}
+.req-requester{font-size:.75rem;color:var(--text3);margin-top:.3rem}
+.req-date{font-size:.74rem;color:var(--text3);flex-shrink:0;margin-top:4px}
+
+.req-empty{padding:40px;text-align:center;color:var(--text3)}
+.req-empty p{font-size:.9rem}
+
+.req-tabs{display:flex;gap:8px;padding:14px 20px;border-bottom:1px solid var(--border2);background:var(--bg2)}
+.req-tab{padding:6px 14px;border-radius:6px;border:1px solid var(--border2);font-size:.8rem;color:var(--text2);cursor:pointer;transition:all .2s;background:transparent;font-family:'DM Sans',sans-serif}
+.req-tab.active{background:var(--gold-pale);border-color:var(--border);color:var(--gold);font-weight:600}
+
+@media(max-width:860px){.req-layout{grid-template-columns:1fr}.req-form-card{order:-1}}
+</style>
+</head>
+<body>
+<nav id="mainNav"></nav>
+
+<div class="req-page">
+  <div class="page-header">
+    <h1>Request a <span>Song</span></h1>
+    <p>Can't find the notation you need? Request it — our community will deliver!</p>
+  </div>
+
+  <div class="req-layout">
+    <!-- FORM -->
+    <div class="req-form-card">
+      <div class="req-form-title"><span>🔔</span> New Song Request</div>
+      <div class="req-success" id="reqSuccess">✓ Request submitted! The community will work on it.</div>
+
+      <div class="field"><label>Song Title <span class="req">*</span></label><input type="text" id="rTitle" placeholder="e.g. Sanda Eliya Wage"/></div>
+      <div class="field"><label>Artist / Singer <span class="req">*</span></label><input type="text" id="rArtist" placeholder="e.g. Amaradeva"/></div>
+      <div class="field"><label>Instrument Needed</label>
+        <select id="rInstr">
+          <option>Any Instrument</option>
+          <option>🎹 Piano / Keyboard</option>
+          <option>🎸 Guitar</option>
+          <option>🎻 Violin</option>
+          <option>🪗 Flute</option>
+          <option>🥁 Drums</option>
+        </select>
+      </div>
+      <div class="field"><label>Your Name</label><input type="text" id="rName" placeholder="Nimal Perera"/></div>
+      <div class="field"><label>Additional Notes <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+        <textarea rows="3" id="rNotes" placeholder="e.g. 'The 1982 version by Amaradeva' or 'For Grade 5 exam'…"></textarea>
+      </div>
+      <button class="req-submit-btn" onclick="submitRequest()">Submit Request 🔔</button>
+
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border2)">
+        <p style="font-size:.78rem;color:var(--text3);line-height:1.65">Requests with more votes get prioritized. Vote on existing requests below to move them up the list!</p>
+      </div>
+    </div>
+
+    <!-- REQUESTS LIST -->
+    <div class="req-list-card">
+      <div class="req-list-header">
+        <h3>Community Requests <span id="reqTotalCount" style="font-size:.9rem;color:var(--text3);font-weight:400"></span></h3>
+        <div class="req-sort">
+          <button class="rsort-btn active" onclick="sortRequests('votes',this)">Most Voted</button>
+          <button class="rsort-btn" onclick="sortRequests('date',this)">Newest</button>
+        </div>
+      </div>
+      <div class="req-tabs">
+        <button class="req-tab active" onclick="filterReqs('all',this)">All</button>
+        <button class="req-tab" onclick="filterReqs('pending',this)">⏳ Pending</button>
+        <button class="req-tab" onclick="filterReqs('inprogress',this)">⚡ In Progress</button>
+        <button class="req-tab" onclick="filterReqs('done',this)">✓ Done</button>
+      </div>
+      <div id="reqList"></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a><p>Sri Lanka's largest free Sinhala music notation portal.</p></div>
+    <div class="footer-col"><h4>Community</h4><a href="submit.html">Submit Notation</a><a href="request.html">Request a Song</a></div>
+    <div class="footer-col"><h4>Browse</h4><a href="browse.html">All Songs</a><a href="genre.html">By Genre</a></div>
+    <div class="footer-col"><h4>Links</h4><a href="index.html">Home</a><a href="login.html">Login</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2025 SwaraLanka 🇱🇰</p></div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/nav.js"></script>
+<script>
+injectNav('request');
+
+// Seed some demo requests if empty
+if(SL.requests.length===0){
+  const seeds=[
+    {title:'Ran Sihinayaki',artist:'Amaradeva',instrument:'🎹 Piano',name:'Kasun P.',notes:'',id:1001,date:'Apr 28',status:'inprogress',votes:24},
+    {title:'Premaya Nam',artist:'Rookantha Gunathilaka',instrument:'🎸 Guitar',name:'Dilshan M.',notes:'Chords version please',id:1002,date:'Apr 27',status:'pending',votes:18},
+    {title:'Seethala Gamane',artist:'Victor Rathnayake',instrument:'Any Instrument',name:'Hiruni S.',notes:'',id:1003,date:'Apr 26',status:'pending',votes:15},
+    {title:'Aluth Avuruddak Wewa',artist:'Traditional',instrument:'🎹 Piano',name:'Chamari W.',notes:'For Avurudu season',id:1004,date:'Apr 25',status:'done',votes:31},
+    {title:'Adarei Man Adarei',artist:'Sunil Edirisinghe',instrument:'🎻 Violin',name:'Nuwan R.',notes:'',id:1005,date:'Apr 24',status:'pending',votes:11},
+    {title:'Sithuvili Malbara',artist:'Edward Jayakody',instrument:'🎸 Guitar',name:'Piyumi D.',notes:'Easy version for beginners',id:1006,date:'Apr 22',status:'pending',votes:8},
+  ];
+  localStorage.setItem('sl_requests', JSON.stringify(seeds));
+  SL.requests = seeds;
+}
+
+const votedIds = JSON.parse(localStorage.getItem('sl_voted')||'[]');
+let currentSort='votes', currentFilter='all';
+
+function renderRequests(){
+  let reqs=[...SL.getRequests()];
+  if(currentFilter!=='all') reqs=reqs.filter(r=>r.status===currentFilter);
+  if(currentSort==='votes') reqs.sort((a,b)=>b.votes-a.votes);
+  else reqs.sort((a,b)=>b.id-a.id);
+  document.getElementById('reqTotalCount').textContent=`(${reqs.length})`;
+  const list=document.getElementById('reqList');
+  if(reqs.length===0){list.innerHTML='<div class="req-empty"><p>No requests in this category yet.</p></div>';return;}
+  list.innerHTML=reqs.map(r=>`
+    <div class="req-item" id="ri-${r.id}">
+      <div class="req-vote">
+        <button class="vote-btn ${votedIds.includes(r.id)?'voted':''}" onclick="vote(${r.id})" title="Vote for this">▲</button>
+        <div class="vote-count" id="vc-${r.id}">${r.votes}</div>
+      </div>
+      <div class="req-info">
+        <div class="req-song-title">${r.title}</div>
+        <div class="req-artist">${r.artist}</div>
+        <div class="req-meta">
+          <span class="req-tag">${r.instrument||'Any'}</span>
+          <span class="req-status ${r.status}">${r.status==='inprogress'?'⚡ In Progress':r.status==='done'?'✓ Done':'⏳ Pending'}</span>
+          ${r.notes?`<span class="req-tag" style="color:var(--text2)">"${r.notes}"</span>`:''}
+        </div>
+        <div class="req-requester">Requested by ${r.name||'Anonymous'} · ${r.date}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function vote(id){
+  const idx=votedIds.indexOf(id);
+  if(idx!==-1){votedIds.splice(idx,1);SL.requests.find(r=>r.id===id).votes--;}
+  else{votedIds.push(id);SL.voteRequest(id);}
+  localStorage.setItem('sl_voted',JSON.stringify(votedIds));
+  localStorage.setItem('sl_requests',JSON.stringify(SL.requests));
+  document.getElementById('vc-'+id).textContent=SL.requests.find(r=>r.id===id)?.votes||0;
+  const btn=document.querySelector(`#ri-${id} .vote-btn`);
+  if(btn) btn.classList.toggle('voted',!btn.classList.contains('voted'));
+  renderRequests();
+}
+
+function submitRequest(){
+  const title=document.getElementById('rTitle').value.trim();
+  const artist=document.getElementById('rArtist').value.trim();
+  if(!title||!artist){alert('Please enter at least the song title and artist name.');return;}
+  SL.addRequest({title,artist,instrument:document.getElementById('rInstr').value,name:document.getElementById('rName').value||'Anonymous',notes:document.getElementById('rNotes').value});
+  document.getElementById('rTitle').value='';document.getElementById('rArtist').value='';document.getElementById('rNotes').value='';
+  const succ=document.getElementById('reqSuccess');succ.classList.add('show');setTimeout(()=>succ.classList.remove('show'),3000);
+  renderRequests();
+}
+
+function sortRequests(type,btn){
+  currentSort=type;document.querySelectorAll('.rsort-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderRequests();
+}
+function filterReqs(type,btn){
+  currentFilter=type;document.querySelectorAll('.req-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderRequests();
+}
+
+// Auto-fill name if logged in
+if(SL.isLoggedIn()) document.getElementById('rName').value=SL.user.name||'';
+
+renderRequests();
+</script>
+</body>
+</html>

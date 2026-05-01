@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — SwaraLanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.auth-page{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;background:var(--bg)}
+.auth-left{background:var(--bg2);border-right:1px solid var(--border2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 48px;position:relative;overflow:hidden}
+.auth-left-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(201,168,76,.07),transparent 70%);pointer-events:none}
+.auth-left-notes{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.fl-note{position:absolute;color:var(--gold);opacity:0;animation:floatNote linear infinite;font-size:1.2rem}
+@keyframes floatNote{0%{transform:translateY(110vh) rotate(0deg);opacity:0}10%{opacity:.25}90%{opacity:.15}100%{transform:translateY(-10vh) rotate(360deg);opacity:0}}
+.auth-brand{position:relative;text-align:center;margin-bottom:3rem}
+.auth-brand .logo{justify-content:center;margin-bottom:1.5rem}
+.auth-brand h2{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;line-height:1.2;margin-bottom:.75rem}
+.auth-brand h2 em{color:var(--gold);font-style:italic}
+.auth-brand p{color:var(--text2);font-size:.9rem;line-height:1.7;max-width:320px}
+.auth-features{display:flex;flex-direction:column;gap:.65rem;margin-top:2rem;position:relative}
+.af{display:flex;align-items:center;gap:10px;font-size:.87rem;color:var(--text2)}
+.af span:first-child{width:28px;height:28px;background:var(--gold-pale);border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+
+.auth-right{display:flex;align-items:center;justify-content:center;padding:40px 48px}
+.auth-box{width:100%;max-width:420px}
+.auth-tabs{display:flex;background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:4px;margin-bottom:2rem}
+.auth-tab{flex:1;padding:10px;border-radius:7px;border:none;background:transparent;color:var(--text2);font-size:.9rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .22s}
+.auth-tab.active{background:var(--bg4);color:var(--text);font-weight:600}
+.auth-form{display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:.8rem;color:var(--text2);font-weight:500;letter-spacing:.02em}
+.field input,.field select{padding:13px 16px;border-radius:9px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:.92rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;width:100%}
+.field input:focus,.field select:focus{border-color:var(--border)}
+.field input::placeholder{color:var(--text3)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.3);border-radius:8px;padding:10px 14px;font-size:.83rem;color:#f87171;display:none}
+.err.show{display:block}
+.success{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:8px;padding:12px 14px;font-size:.87rem;color:#34D399;display:none;text-align:center}
+.success.show{display:block}
+.submit-btn{padding:14px;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;border:none;width:100%;font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#0B0C18;transition:all .25s;margin-top:4px}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,168,76,.4)}
+.submit-btn:active{transform:translateY(0)}
+.divider-or{display:flex;align-items:center;gap:10px;color:var(--text3);font-size:.8rem}
+.divider-or::before,.divider-or::after{content:'';flex:1;height:1px;background:var(--border2)}
+.google-btn{width:100%;padding:12px;border-radius:10px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:.9rem;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .22s}
+.google-btn:hover{border-color:var(--border);background:var(--bg3)}
+.auth-footer{text-align:center;font-size:.82rem;color:var(--text3);margin-top:1rem}
+.auth-footer a{color:var(--gold)}
+.terms{font-size:.76rem;color:var(--text3);text-align:center;line-height:1.6;margin-top:8px}
+.terms a{color:var(--text2)}
+.pw-wrap{position:relative}
+.pw-wrap input{padding-right:44px}
+.pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:0;line-height:1}
+.strength-bar{height:3px;border-radius:3px;margin-top:6px;background:var(--bg3);overflow:hidden;display:none}
+.strength-fill{height:100%;border-radius:3px;transition:width .3s,background .3s}
+
+@media(max-width:860px){.auth-page{grid-template-columns:1fr}.auth-left{display:none}.auth-right{padding:100px 24px 40px}}
+</style>
+</head>
+<body>
+<nav id="mainNav"></nav>
+
+<div class="auth-page">
+  <!-- LEFT PANEL -->
+  <div class="auth-left">
+    <div class="auth-left-bg"></div>
+    <div class="auth-left-notes" id="authNotes"></div>
+    <div class="auth-brand">
+      <a class="logo" href="index.html" style="display:flex;align-items:center;gap:10px;margin-bottom:1.2rem">
+        <div class="logo-icon">🎵</div>
+        <div class="logo-text">Swara<span style="color:var(--gold)">Lanka</span></div>
+      </a>
+      <h2>Sri Lanka's Music<br>Belongs to <em>Everyone</em></h2>
+      <p>Join thousands of Sri Lankan musicians and access the largest free Sinhala music notation library.</p>
+      <div class="auth-features">
+        <div class="af"><span>🎵</span><span>5,000+ free Sinhala notations</span></div>
+        <div class="af"><span>♡</span><span>Save your favourite songs</span></div>
+        <div class="af"><span>📝</span><span>Submit & share your own notations</span></div>
+        <div class="af"><span>🔔</span><span>Request any song you want</span></div>
+        <div class="af"><span>🆓</span><span>100% free. Forever. No ads.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="auth-right">
+    <div class="auth-box">
+      <!-- TABS -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">Login</button>
+        <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">Register Free</button>
+      </div>
+
+      <!-- ERROR / SUCCESS -->
+      <div class="err" id="errMsg"></div>
+      <div class="success" id="successMsg"></div>
+
+      <!-- LOGIN FORM -->
+      <form class="auth-form" id="loginForm" onsubmit="doLogin(event)">
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" placeholder="you@email.com" required/>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="loginPassword" placeholder="Your password" required/>
+            <button type="button" class="pw-toggle" onclick="togglePw('loginPassword',this)">👁</button>
+          </div>
+        </div>
+        <div style="text-align:right"><a href="#" style="font-size:.8rem;color:var(--gold)">Forgot password?</a></div>
+        <button type="submit" class="submit-btn">Login to SwaraLanka</button>
+        <div class="divider-or">or</div>
+        <button type="button" class="google-btn" onclick="googleLogin()">
+          <span style="font-size:1.1rem">G</span> Continue with Google
+        </button>
+        <p class="auth-footer">No account? <a href="#" onclick="switchTab('register');return false">Register for free →</a></p>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form class="auth-form" id="registerForm" style="display:none" onsubmit="doRegister(event)">
+        <div class="field-row">
+          <div class="field"><label>First Name</label><input type="text" id="regFirst" placeholder="Nimal" required/></div>
+          <div class="field"><label>Last Name</label><input type="text" id="regLast" placeholder="Perera" required/></div>
+        </div>
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" id="regEmail" placeholder="you@email.com" required/>
+        </div>
+        <div class="field">
+          <label>Instrument You Play</label>
+          <select id="regInstr">
+            <option value="">Select instrument (optional)</option>
+            <option>🎹 Piano / Keyboard</option>
+            <option>🎸 Guitar</option>
+            <option>🎻 Violin</option>
+            <option>🪗 Flute</option>
+            <option>🥁 Drums</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="regPassword" placeholder="Min. 8 characters" required minlength="8" oninput="checkStrength(this)"/>
+            <button type="button" class="pw-toggle" onclick="togglePw('regPassword',this)">👁</button>
+          </div>
+          <div class="strength-bar" id="strengthBar"><div class="strength-fill" id="strengthFill"></div></div>
+        </div>
+        <button type="submit" class="submit-btn">Create Free Account 🎵</button>
+        <div class="divider-or">or</div>
+        <button type="button" class="google-btn" onclick="googleLogin()">
+          <span style="font-size:1.1rem">G</span> Sign up with Google
+        </button>
+        <p class="terms">By registering you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+        <p class="auth-footer">Already have an account? <a href="#" onclick="switchTab('login');return false">Login →</a></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/nav.js"></script>
+<script>
+// Check if already logged in
+if (SL.isLoggedIn()) window.location = 'index.html';
+
+// Set initial tab from URL
+const urlMode = new URLSearchParams(location.search).get('mode');
+if (urlMode === 'register') switchTab('register');
+
+injectNav('');
+
+// Floating notes
+const notesCont = document.getElementById('authNotes');
+['♩','♪','♫','♬','𝄞'].forEach(c => {
+  for(let j=0;j<3;j++){
+    const n=document.createElement('div');n.className='fl-note';n.textContent=c;
+    n.style.left=Math.random()*100+'%';n.style.animationDuration=(14+Math.random()*14)+'s';
+    n.style.animationDelay=(Math.random()*16)+'s';notesCont.appendChild(n);
+  }
+});
+
+function switchTab(tab) {
+  document.getElementById('loginForm').style.display = tab==='login'?'flex':'none';
+  document.getElementById('registerForm').style.display = tab==='register'?'flex':'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  clearMsg();
+}
+
+function showErr(msg){const el=document.getElementById('errMsg');el.textContent=msg;el.classList.add('show');document.getElementById('successMsg').classList.remove('show')}
+function showSuccess(msg){const el=document.getElementById('successMsg');el.textContent=msg;el.classList.add('show');document.getElementById('errMsg').classList.remove('show')}
+function clearMsg(){document.getElementById('errMsg').classList.remove('show');document.getElementById('successMsg').classList.remove('show')}
+
+function doLogin(e) {
+  e.preventDefault();
+  const email=document.getElementById('loginEmail').value;
+  const pass=document.getElementById('loginPassword').value;
+  if(!email||!pass){showErr('Please fill in all fields.');return;}
+  // Simulate login (swap with Firebase Auth when ready)
+  const name = email.split('@')[0].charAt(0).toUpperCase()+email.split('@')[0].slice(1);
+  SL.login(name, email);
+  showSuccess('Welcome back! Redirecting…');
+  setTimeout(()=>window.location=document.referrer||'index.html',1200);
+}
+
+function doRegister(e) {
+  e.preventDefault();
+  const first=document.getElementById('regFirst').value.trim();
+  const last=document.getElementById('regLast').value.trim();
+  const email=document.getElementById('regEmail').value;
+  const pass=document.getElementById('regPassword').value;
+  if(!first||!email||!pass){showErr('Please fill in all required fields.');return;}
+  if(pass.length<8){showErr('Password must be at least 8 characters.');return;}
+  SL.login(`${first} ${last}`, email);
+  showSuccess(`Welcome to SwaraLanka, ${first}! 🎵 Redirecting…`);
+  setTimeout(()=>window.location='index.html',1400);
+}
+
+function googleLogin() {
+  // Simulate Google login for demo — swap with Firebase Google Auth when ready
+  SL.login('Google User', 'user@gmail.com');
+  showSuccess('Signed in with Google! Redirecting…');
+  setTimeout(()=>window.location='index.html',1200);
+}
+
+function togglePw(id,btn){
+  const inp=document.getElementById(id);
+  const show=inp.type==='password';inp.type=show?'text':'password';btn.textContent=show?'🙈':'👁';
+}
+
+function checkStrength(inp){
+  const bar=document.getElementById('strengthBar'),fill=document.getElementById('strengthFill');
+  bar.style.display='block';
+  const v=inp.value,len=v.length;
+  let score=0;
+  if(len>=8)score++;if(len>=12)score++;if(/[A-Z]/.test(v))score++;if(/[0-9]/.test(v))score++;if(/[^A-Za-z0-9]/.test(v))score++;
+  const pct=Math.min(score/4*100,100);
+  const colors=['#f87171','#fb923c','#fbbf24','#4ade80','#34D399'];
+  fill.style.width=pct+'%';fill.style.background=colors[Math.min(score-1,4)]||'#f87171';
+}
+</script>
+</body>
+</html>

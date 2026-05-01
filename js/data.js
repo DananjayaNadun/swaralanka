@@ -1,4 +1,5 @@
-// SwaraLanka — Song Database
+// SwaraLanka — Song & Artist Database
+
 const SONGS = [
   {id:1,title:"Danno Budunge",artist:"Traditional",instruments:["piano","guitar"],difficulty:"easy",key:"C Major",genre:"Traditional",views:4820,likes:312},
   {id:2,title:"Sanda Eliya Wage",artist:"Amaradeva",instruments:["piano","guitar","violin"],difficulty:"medium",key:"G Major",genre:"Classical",views:3950,likes:278},
@@ -24,13 +25,38 @@ const SONGS = [
   {id:22,title:"Obata Salakuna",artist:"Sunil Edirisinghe",instruments:["guitar"],difficulty:"easy",key:"D Minor",genre:"Traditional",views:880,likes:60},
   {id:23,title:"Mathaka Wewa",artist:"Wayo",instruments:["guitar","piano"],difficulty:"medium",key:"E Major",genre:"Rock",views:770,likes:53},
   {id:24,title:"Ahasata Kiya",artist:"Amaradeva",instruments:["violin","piano"],difficulty:"hard",key:"B Minor",genre:"Classical",views:660,likes:46},
+  {id:25,title:"Wage Wage",artist:"Rookantha Gunathilaka",instruments:["guitar","piano"],difficulty:"easy",key:"C Major",genre:"Pop",views:620,likes:42},
+  {id:26,title:"Sithuvili Malhara",artist:"Nanda Malini",instruments:["piano"],difficulty:"medium",key:"D Major",genre:"Classical",views:580,likes:39},
+  {id:27,title:"Deveni Inimaga",artist:"Kasun Kalhara",instruments:["piano","guitar"],difficulty:"medium",key:"G Minor",genre:"Ballad",views:540,likes:36},
+  {id:28,title:"Numba Nisa",artist:"Clarence Wijewardene",instruments:["guitar"],difficulty:"easy",key:"A Major",genre:"Pop",views:500,likes:33},
+  {id:29,title:"Piyum Bihidu",artist:"Sanath Nandasiri",instruments:["piano"],difficulty:"easy",key:"C Major",genre:"Traditional",views:460,likes:30},
+  {id:30,title:"Sagara Tharanga",artist:"Victor Rathnayake",instruments:["piano","violin"],difficulty:"hard",key:"F Major",genre:"Classical",views:420,likes:27},
+];
+
+const ARTISTS = [
+  {id:'a1',name:'Amaradeva',born:1927,songs:3,genre:'Classical',bio:"National treasure of Sri Lanka. The greatest Sinhala classical musician and composer of the modern era.",icon:'🎼',color:'#C9A84C'},
+  {id:'a2',name:'Clarence Wijewardene',born:1943,songs:3,genre:'Pop / Baila',bio:"The father of Sinhala pop music. Brought modern sounds to Sri Lankan music in the 70s and 80s.",icon:'🎸',color:'#9B94FF'},
+  {id:'a3',name:'Rookantha Gunathilaka',born:1960,songs:3,genre:'Ballad',bio:"One of Sri Lanka's most beloved vocalists known for emotional ballads and romantic songs.",icon:'🎤',color:'#f87171'},
+  {id:'a4',name:'Victor Rathnayake',born:1938,songs:3,genre:'Classical',bio:"Legendary classical singer who popularised Sinhala light music across generations.",icon:'🎻',color:'#38bdf8'},
+  {id:'a5',name:'Nanda Malini',born:1945,songs:3,genre:'Classical / Folk',bio:"Iconic voice of Sri Lanka. Known for profound and poetic Sinhala songs with deep meaning.",icon:'🌸',color:'#e879f9'},
+  {id:'a6',name:'Sanath Nandasiri',born:1940,songs:3,genre:'Traditional',bio:"Master of traditional Sinhala music with a career spanning six decades.",icon:'🪘',color:'#4ade80'},
+  {id:'a7',name:'Kasun Kalhara',born:1979,songs:3,genre:'Ballad',bio:"Modern Sri Lankan composer and singer known for cinematic ballads and film soundtracks.",icon:'🎹',color:'#fbbf24'},
+  {id:'a8',name:'Edward Jayakody',born:1948,songs:2,genre:'Classical',bio:"Distinguished musician celebrated for his contributions to classical Sinhala music.",icon:'🎺',color:'#fb923c'},
+  {id:'a9',name:'Sunil Edirisinghe',born:1947,songs:2,genre:'Traditional',bio:"Beloved for his warm voice and traditional Sinhala folk songs loved by all generations.",icon:'🪗',color:'#34d399'},
+  {id:'a10',name:'Wayo',born:1988,songs:2,genre:'Rock / Pop',bio:"Sri Lanka's pioneering rock band that defined modern Sinhala rock music.",icon:'🎸',color:'#818cf8'},
+  {id:'a11',name:'Athma Liyanage',born:1985,songs:2,genre:'Pop',bio:"Contemporary Sinhala pop star known for heartfelt melodies and modern production.",icon:'🎤',color:'#f472b6'},
+];
+
+const GENRES = [
+  {id:'Classical',label:'Classical',icon:'🎼',color:'#C9A84C',desc:"Traditional Sinhala classical compositions rooted in Carnatic and Western influences.",count:10},
+  {id:'Traditional',label:'Traditional',icon:'🪘',color:'#4ade80',desc:"Ancient folk songs and traditional melodies passed down through generations.",count:5},
+  {id:'Ballad',label:'Ballad',icon:'💛',color:'#fbbf24',desc:"Emotional slow songs about love, longing and life — Sri Lanka's favourite genre.",count:5},
+  {id:'Pop',label:'Pop',icon:'🎤',color:'#e879f9',desc:"Modern Sinhala pop songs from the 70s to today — catchy, fun and widely loved.",count:6},
+  {id:'Rock',label:'Rock',icon:'🎸',color:'#818cf8',desc:"Sinhala rock music — from classic bands to modern alternative.",count:2},
 ];
 
 const NOTATION = {
-  intro:[
-    {notes:["C","C","E","G","E","C","–"],lyric:""},
-    {notes:["G","E","C","E","G","C","–"],lyric:""}
-  ],
+  intro:[{notes:["C","C","E","G","E","C","–"],lyric:""},{notes:["G","E","C","E","G","C","–"],lyric:""}],
   verse:[
     {notes:["G","A","G","E","D","C","–"],lyric:"Dan  -  no    Bu  -  dun  -  ge"},
     {notes:["F","E","F","G","A","–","–"],lyric:"Si  -  tha  -  la   ge"},
@@ -43,7 +69,7 @@ const NOTATION = {
   ]
 };
 
-function getNoteClass(n){const m={"C":"note-c","D":"note-d","E":"note-e","F":"note-f","G":"note-g","A":"note-a","B":"note-b","–":"note-rest"};return m[n]||"note-rest"}
-function diffLabel(d){return d==="easy"?"Easy":d==="medium"?"Medium":"Hard"}
-function instrBadge(i){return`<span class="badge badge-${i}">${i.charAt(0).toUpperCase()+i.slice(1)}</span>`}
-function diffBadge(d){return`<span class="badge badge-${d}">${diffLabel(d)}</span>`}
+function getNoteClass(n){const m={"C":"note-c","D":"note-d","E":"note-e","F":"note-f","G":"note-g","A":"note-a","B":"note-b","–":"note-rest"};return m[n]||"note-rest";}
+function diffLabel(d){return d==="easy"?"Easy":d==="medium"?"Medium":"Hard";}
+function instrBadge(i){const icos={piano:'🎹',guitar:'🎸',violin:'🎻',flute:'🪗'};return`<span class="badge badge-${i}">${icos[i]||'🎵'} ${i.charAt(0).toUpperCase()+i.slice(1)}</span>`;}
+function diffBadge(d){return`<span class="badge badge-${d}">${diffLabel(d)}</span>`;}

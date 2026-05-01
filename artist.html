@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artists — SwaraLanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.artists-page{max-width:1200px;margin:0 auto;padding:108px 5% 60px}
+.page-header{margin-bottom:2.5rem}
+.page-header h1{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:700}
+.page-header h1 span{color:var(--gold)}
+.page-header p{color:var(--text2);margin-top:.4rem}
+
+/* SEARCH */
+.artist-search{position:relative;max-width:500px;margin-bottom:2rem}
+.artist-search input{width:100%;padding:13px 18px 13px 46px;border-radius:50px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:.92rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.artist-search input:focus{border-color:var(--border)}
+.artist-search input::placeholder{color:var(--text3)}
+.artist-search .ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--text3)}
+
+/* ALPHABET FILTER */
+.alpha-filter{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:2rem}
+.alpha-btn{width:32px;height:32px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center}
+.alpha-btn:hover{border-color:var(--border);color:var(--text)}
+.alpha-btn.active{background:var(--gold-pale);border-color:var(--border);color:var(--gold)}
+
+/* ARTIST GRID */
+.artists-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
+.artist-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:24px 18px;text-align:center;cursor:pointer;transition:all .28s;position:relative;overflow:hidden}
+.artist-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--gold-pale),transparent);opacity:0;transition:opacity .28s}
+.artist-card:hover{border-color:rgba(201,168,76,.35);transform:translateY(-4px);box-shadow:0 16px 36px rgba(0,0,0,.3)}
+.artist-card:hover::before{opacity:1}
+.artist-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--gold-pale),var(--bg4));border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--gold);margin:0 auto 1rem;position:relative;z-index:1}
+.artist-name{font-weight:600;font-size:.95rem;color:var(--text);margin-bottom:.3rem;position:relative;z-index:1}
+.artist-songs{font-size:.78rem;color:var(--text3);position:relative;z-index:1}
+.artist-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:.6rem;position:relative;z-index:1}
+.artist-tag{font-size:.67rem;padding:2px 8px;border-radius:50px;border:1px solid var(--border2);color:var(--text3)}
+
+/* DETAIL PANEL */
+.artist-detail{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:2rem;display:none;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.artist-detail.show{display:block}
+.detail-top{display:flex;gap:24px;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap}
+.detail-avatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--gold-pale),var(--bg4));border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--gold);flex-shrink:0}
+.detail-info h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;margin-bottom:.3rem}
+.detail-info p{color:var(--text2);font-size:.88rem;line-height:1.65;max-width:520px}
+.detail-stats{display:flex;gap:1.5rem;margin-top:.75rem;flex-wrap:wrap}
+.dstat .num{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--gold)}
+.dstat .lbl{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.detail-close{margin-left:auto;width:32px;height:32px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;font-size:1rem;align-self:flex-start;flex-shrink:0}
+.detail-close:hover{border-color:var(--border);color:var(--text)}
+.detail-songs{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.detail-song{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:13px 15px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .22s;text-decoration:none;color:inherit}
+.detail-song:hover{border-color:rgba(201,168,76,.25);transform:translateX(3px)}
+.detail-song-info .title{font-size:.88rem;font-weight:500;color:var(--text)}
+.detail-song-info .instr{font-size:.75rem;color:var(--text3);margin-top:2px}
+.detail-song-badges{display:flex;gap:4px;margin-top:.3rem;flex-wrap:wrap}
+
+.no-results{text-align:center;padding:60px;color:var(--text3)}
+</style>
+</head>
+<body>
+<nav id="mainNav"></nav>
+
+<div class="artists-page">
+  <div class="page-header">
+    <h1>Browse <span>Artists</span></h1>
+    <p>Explore notations by your favourite Sri Lankan musicians.</p>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="artist-search">
+    <span class="ico">🔍</span>
+    <input type="text" id="artistSearch" placeholder="Search artists…" autocomplete="off" oninput="filterArtists()"/>
+  </div>
+
+  <!-- ALPHABET FILTER -->
+  <div class="alpha-filter" id="alphaFilter">
+    <button class="alpha-btn active" data-l="all" onclick="setAlpha('all',this)">All</button>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="artist-detail" id="artistDetail"></div>
+
+  <!-- GRID -->
+  <div class="artists-grid" id="artistsGrid"></div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a><p>Sri Lanka's largest free Sinhala music notation portal.</p></div>
+    <div class="footer-col"><h4>Browse</h4><a href="browse.html">All Songs</a><a href="genre.html">By Genre</a><a href="artist.html">Artists</a></div>
+    <div class="footer-col"><h4>Community</h4><a href="submit.html">Submit</a><a href="request.html">Request</a></div>
+    <div class="footer-col"><h4>Links</h4><a href="index.html">Home</a><a href="login.html">Login</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2025 SwaraLanka 🇱🇰</p></div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/nav.js"></script>
+<script>
+injectNav('artist');
+
+// Build artist list from songs
+const artistMap = {};
+SONGS.forEach(s => {
+  if(!artistMap[s.artist]) artistMap[s.artist] = { name: s.artist, songs: [], instruments: new Set(), genres: new Set() };
+  artistMap[s.artist].songs.push(s);
+  s.instruments.forEach(i => artistMap[s.artist].instruments.add(i));
+  artistMap[s.artist].genres.add(s.genre);
+});
+const ARTISTS = Object.values(artistMap).sort((a,b)=>a.name.localeCompare(b.name));
+
+// Bios
+const BIOS = {
+  'Amaradeva': 'W.D. Amaradeva (born 1927) is considered the greatest living legend of Sinhala music. His contributions to Sri Lankan music span over six decades.',
+  'Clarence Wijewardene': 'Clarence Wijewardene was a pioneering Sinhala pop singer who helped define modern Sri Lankan popular music from the 1960s onward.',
+  'Rookantha Gunathilaka': 'Rookantha Gunathilaka is one of Sri Lanka\'s most beloved ballad singers, known for his smooth voice and romantic compositions.',
+  'Victor Rathnayake': 'Victor Rathnayake is an iconic Sri Lankan singer known for his classical style and decades of contributions to Sinhala music.',
+  'Sanath Nandasiri': 'Sanath Nandasiri was a celebrated Sri Lankan singer and songwriter known for blending classical and folk elements.',
+  'Nanda Malini': 'Nanda Malini is a legendary Sri Lankan singer known for her politically conscious songs and powerful voice.',
+  'Sunil Edirisinghe': 'Sunil Edirisinghe is a renowned Sri Lankan singer known for his gentle voice and wide range of Sinhala songs.',
+  'Edward Jayakody': 'Edward Jayakody is a popular Sri Lankan singer celebrated for his romantic songs and classical influences.',
+  'Kasun Kalhara': 'Kasun Kalhara is a modern Sri Lankan singer-songwriter known for deeply emotional ballads and complex compositions.',
+  'Athma Liyanage': 'Athma Liyanage is a popular contemporary Sri Lankan singer known for her rich voice and modern Sinhala pop songs.',
+};
+
+// Build alphabet filter
+const letters = [...new Set(ARTISTS.map(a => a.name[0].toUpperCase()))].sort();
+const alphaFilter = document.getElementById('alphaFilter');
+letters.forEach(l => {
+  const btn = document.createElement('button');
+  btn.className='alpha-btn';btn.textContent=l;btn.dataset.l=l;
+  btn.onclick=()=>setAlpha(l,btn);
+  alphaFilter.appendChild(btn);
+});
+
+let currentAlpha='all', currentSearch='', activeArtist=null;
+
+function setAlpha(l,btn){
+  currentAlpha=l;
+  document.querySelectorAll('.alpha-btn').forEach(b=>b.classList.toggle('active',b.dataset.l===l));
+  renderArtists();
+}
+
+function filterArtists(){currentSearch=document.getElementById('artistSearch').value.toLowerCase();renderArtists();}
+
+function renderArtists(){
+  let list=ARTISTS;
+  if(currentAlpha!=='all') list=list.filter(a=>a.name[0].toUpperCase()===currentAlpha);
+  if(currentSearch) list=list.filter(a=>a.name.toLowerCase().includes(currentSearch));
+  const grid=document.getElementById('artistsGrid');
+  if(list.length===0){grid.innerHTML='<div class="no-results" style="grid-column:1/-1">No artists found.</div>';return;}
+  grid.innerHTML=list.map(a=>`
+    <div class="artist-card" onclick="showArtist('${a.name}')">
+      <div class="artist-avatar">${a.name[0]}</div>
+      <div class="artist-name">${a.name}</div>
+      <div class="artist-songs">${a.songs.length} notation${a.songs.length!==1?'s':''}</div>
+      <div class="artist-tags">${[...a.instruments].map(i=>`<span class="artist-tag">${i}</span>`).join('')}</div>
+    </div>
+  `).join('');
+}
+
+function showArtist(name){
+  const a=artistMap[name];
+  if(!a) return;
+  const panel=document.getElementById('artistDetail');
+  const bio=BIOS[name]||`${name} is a celebrated Sri Lankan musician with ${a.songs.length} notations available on SwaraLanka.`;
+  const topViews=a.songs.reduce((s,song)=>s+song.views,0);
+  panel.innerHTML=`
+    <div class="detail-top">
+      <div class="detail-avatar">${name[0]}</div>
+      <div class="detail-info">
+        <h2>${name}</h2>
+        <p>${bio}</p>
+        <div class="detail-stats">
+          <div class="dstat"><div class="num">${a.songs.length}</div><div class="lbl">Notations</div></div>
+          <div class="dstat"><div class="num">${[...a.instruments].length}</div><div class="lbl">Instruments</div></div>
+          <div class="dstat"><div class="num">${topViews.toLocaleString()}</div><div class="lbl">Total Views</div></div>
+        </div>
+      </div>
+      <button class="detail-close" onclick="closeDetail()">✕</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--text3);margin-bottom:1rem;text-transform:uppercase;letter-spacing:.08em">Available Notations</p>
+    <div class="detail-songs">
+      ${a.songs.map(s=>`
+        <a class="detail-song" href="song.html?id=${s.id}">
+          <div class="detail-song-info">
+            <div class="title">${s.title}</div>
+            <div class="instr">${s.instruments.join(' · ')}</div>
+            <div class="detail-song-badges">${diffBadge(s.difficulty)}</div>
+          </div>
+          <span style="color:var(--text3);margin-left:auto">›</span>
+        </a>
+      `).join('')}
+    </div>
+  `;
+  panel.classList.add('show');
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function closeDetail(){
+  document.getElementById('artistDetail').classList.remove('show');
+}
+
+renderArtists();
+</script>
+</body>
+</html>

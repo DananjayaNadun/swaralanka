@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Submit a Notation — SwaraLanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.submit-page{max-width:860px;margin:0 auto;padding:108px 5% 60px}
+.page-header{margin-bottom:2.5rem}
+.page-header h1{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:700}
+.page-header h1 span{color:var(--gold)}
+.page-header p{color:var(--text2);margin-top:.4rem;font-size:.95rem}
+
+/* PROGRESS STEPS */
+.steps{display:flex;gap:0;margin-bottom:2.5rem}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.step::before{content:'';position:absolute;top:18px;left:50%;right:-50%;height:2px;background:var(--border2);z-index:0}
+.step:last-child::before{display:none}
+.step-circle{width:36px;height:36px;border-radius:50%;border:2px solid var(--border2);background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:600;color:var(--text3);position:relative;z-index:1;transition:all .3s}
+.step.active .step-circle{border-color:var(--gold);background:var(--gold-pale);color:var(--gold)}
+.step.done .step-circle{border-color:var(--green);background:rgba(52,211,153,.12);color:var(--green)}
+.step-label{font-size:.72rem;color:var(--text3);margin-top:.4rem;text-align:center;line-height:1.3}
+.step.active .step-label{color:var(--gold)}
+.step.done .step-label{color:var(--green)}
+
+/* FORM CARD */
+.form-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden}
+.form-section{padding:28px 28px 0}
+.form-section-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;margin-bottom:1.2rem;display:flex;align-items:center;gap:8px;color:var(--text)}
+.form-section-title span{width:28px;height:28px;background:var(--gold-pale);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;border:1px solid var(--border);flex-shrink:0}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.full{grid-column:1/-1}
+.field label{font-size:.78rem;color:var(--text2);font-weight:500;letter-spacing:.02em}
+.field label .req{color:var(--gold);margin-left:2px}
+.field input,.field select,.field textarea{padding:12px 14px;border-radius:9px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:.9rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--border)}
+.field input::placeholder,.field textarea::placeholder{color:var(--text3)}
+.field .hint{font-size:.74rem;color:var(--text3);margin-top:3px}
+.divider-line{height:1px;background:var(--border2);margin:24px 0}
+
+/* NOTATION EDITOR */
+.notation-editor{padding:0 28px 28px}
+.note-editor-grid{display:flex;flex-direction:column;gap:12px}
+.notation-row-edit{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:14px 16px}
+.notation-row-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.nr-label{font-size:.76rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+.nr-actions{margin-left:auto;display:flex;gap:6px}
+.nr-btn{padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:transparent;color:var(--text3);font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.nr-btn:hover{border-color:var(--border);color:var(--text)}
+.notes-input-row{display:flex;gap:6px;flex-wrap:wrap}
+.note-input-wrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.note-input-wrap select{width:52px;padding:6px 4px;border-radius:6px;background:var(--bg4);border:1px solid var(--border2);color:var(--text);font-size:.82rem;text-align:center;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;outline:none}
+.note-input-wrap .note-preview{width:36px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700}
+.lyric-inp{width:100%;padding:7px 10px;border-radius:7px;background:var(--bg4);border:1px solid var(--border2);color:var(--text2);font-size:.8rem;font-family:'DM Sans',sans-serif;outline:none;margin-top:6px}
+.lyric-inp::placeholder{color:var(--text3)}
+.add-row-btn{width:100%;padding:11px;border-radius:9px;border:2px dashed var(--border2);background:transparent;color:var(--text3);font-size:.85rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+.add-row-btn:hover{border-color:var(--border);color:var(--gold)}
+
+/* PREVIEW */
+.preview-area{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:16px;margin-top:14px}
+.preview-label{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.note-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
+.note{display:inline-block;padding:4px 10px;border-radius:6px;font-size:.84rem;font-weight:700}
+.note-c{background:#1a2a1a;color:#4ade80}.note-d{background:#1a1a2a;color:#818cf8}
+.note-e{background:#2a1a1a;color:#f87171}.note-f{background:#2a2a1a;color:#fbbf24}
+.note-g{background:#1a2a2a;color:#38bdf8}.note-a{background:#2a1a2a;color:#e879f9}
+.note-b{background:#2a2218;color:#fb923c}.note-rest{background:#1e1e28;color:#6b7280}
+.note-lyric{font-size:.72rem;color:var(--text3);margin:2px 0 8px 2px}
+
+/* SUBMIT AREA */
+.form-footer{padding:20px 28px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;border-top:1px solid var(--border2)}
+.submit-btn{padding:13px 32px;border-radius:10px;font-size:.95rem;font-weight:700;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:#0B0C18;transition:all .25s;display:flex;align-items:center;gap:8px}
+.submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(201,168,76,.4)}
+.submit-note{font-size:.8rem;color:var(--text3);max-width:320px}
+
+/* SUCCESS */
+.success-card{background:var(--bg2);border:1px solid rgba(52,211,153,.3);border-radius:var(--radius);padding:60px 40px;text-align:center;display:none}
+.success-card.show{display:block}
+.success-card h2{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--green);margin:1rem 0 .6rem}
+
+/* GUIDELINES */
+.guidelines{background:var(--gold-pale);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:2rem}
+.guidelines h4{font-size:.85rem;font-weight:600;color:var(--gold);margin-bottom:.6rem}
+.guidelines ul{list-style:none;display:flex;flex-direction:column;gap:.4rem}
+.guidelines li{font-size:.83rem;color:var(--text2);display:flex;align-items:flex-start;gap:8px}
+.guidelines li::before{content:'✦';color:var(--gold);font-size:.7rem;margin-top:.2rem;flex-shrink:0}
+
+@media(max-width:640px){.form-grid{grid-template-columns:1fr}.steps{gap:4px}.step-label{display:none}}
+</style>
+</head>
+<body>
+<nav id="mainNav"></nav>
+
+<div class="submit-page">
+  <div class="page-header">
+    <h1>Submit a <span>Notation</span></h1>
+    <p>Share your knowledge with thousands of Sri Lankan musicians — contribute a notation to the library.</p>
+  </div>
+
+  <!-- STEPS -->
+  <div class="steps" id="stepsBar">
+    <div class="step active" id="step1"><div class="step-circle">1</div><div class="step-label">Song Info</div></div>
+    <div class="step" id="step2"><div class="step-circle">2</div><div class="step-label">Notation</div></div>
+    <div class="step" id="step3"><div class="step-circle">3</div><div class="step-label">Review</div></div>
+  </div>
+
+  <!-- GUIDELINES -->
+  <div class="guidelines">
+    <h4>📋 Submission Guidelines</h4>
+    <ul>
+      <li>Make sure you have verified the notation is accurate before submitting.</li>
+      <li>Use standard Western note names (C D E F G A B) or Solfège (Do Re Mi…).</li>
+      <li>Include lyrics if possible — it helps other musicians follow along.</li>
+      <li>All submissions are reviewed by our team before going live (usually within 24 hours).</li>
+    </ul>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-card" id="formCard">
+    <!-- SONG INFO -->
+    <div class="form-section">
+      <div class="form-section-title"><span>🎵</span> Song Information</div>
+      <div class="form-grid">
+        <div class="field"><label>Song Title <span class="req">*</span></label><input type="text" id="subTitle" placeholder="e.g. Danno Budunge" required/></div>
+        <div class="field"><label>Artist / Singer <span class="req">*</span></label><input type="text" id="subArtist" placeholder="e.g. Amaradeva" required/></div>
+        <div class="field"><label>Instrument <span class="req">*</span></label>
+          <select id="subInstr">
+            <option value="piano">🎹 Piano / Keyboard</option>
+            <option value="guitar">🎸 Guitar</option>
+            <option value="violin">🎻 Violin</option>
+            <option value="flute">🪗 Flute</option>
+            <option value="drums">🥁 Drums</option>
+          </select>
+        </div>
+        <div class="field"><label>Key / Scale <span class="req">*</span></label>
+          <select id="subKey">
+            <option>C Major</option><option>G Major</option><option>D Major</option><option>A Major</option>
+            <option>E Major</option><option>F Major</option><option>A Minor</option><option>E Minor</option>
+            <option>D Minor</option><option>G Minor</option><option>B Minor</option><option>F Minor</option>
+          </select>
+        </div>
+        <div class="field"><label>Difficulty</label>
+          <select id="subDiff"><option value="easy">Easy (Beginner)</option><option value="medium" selected>Medium (Intermediate)</option><option value="hard">Hard (Advanced)</option></select>
+        </div>
+        <div class="field"><label>Genre</label>
+          <select id="subGenre"><option>Traditional</option><option>Classical</option><option>Ballad</option><option>Pop</option><option>Rock</option><option>Folk</option><option>Other</option></select>
+        </div>
+        <div class="field full"><label>Tempo / Speed</label>
+          <select id="subTempo"><option>Slow</option><option selected>Moderate</option><option>Fast</option><option>Very Fast</option></select>
+        </div>
+      </div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- NOTATION EDITOR -->
+    <div class="notation-editor">
+      <div class="form-section-title"><span>🎼</span> Enter the Notation</div>
+      <div class="note-editor-grid" id="noteEditorGrid"></div>
+      <button class="add-row-btn" style="margin-top:10px" onclick="addNoteRow()">+ Add Another Line</button>
+
+      <div style="margin-top:18px">
+        <div class="form-section-title" style="font-size:1rem"><span>👁</span> Live Preview</div>
+        <div class="preview-area" id="livePreview"><div style="color:var(--text3);font-size:.85rem">Start entering notes above to see preview…</div></div>
+      </div>
+
+      <div class="divider-line"></div>
+
+      <!-- SUBMITTER INFO -->
+      <div class="form-section-title"><span>👤</span> Your Info</div>
+      <div class="form-grid" style="margin-bottom:20px">
+        <div class="field"><label>Your Name <span class="req">*</span></label><input type="text" id="subName" placeholder="Nimal Perera" required/></div>
+        <div class="field"><label>Email <span class="req">*</span></label><input type="email" id="subEmail" placeholder="you@email.com" required/></div>
+        <div class="field full"><label>Additional Notes <span style="color:var(--text3);font-weight:400">(optional)</span></label>
+          <textarea id="subNotes" rows="3" placeholder="Any tips, chord suggestions, or details about this notation…"></textarea>
+          <div class="hint">e.g. "This uses a capo on fret 2" or "Best played slowly at first"</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <div class="submit-note">Your notation will be reviewed and added to the library within 24 hours. Thank you for contributing! 🙏</div>
+      <button class="submit-btn" onclick="doSubmit()">Submit Notation ✦</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS STATE -->
+  <div class="success-card" id="successCard">
+    <div style="font-size:3.5rem">🎉</div>
+    <h2>Notation Submitted!</h2>
+    <p style="color:var(--text2);max-width:380px;margin:0 auto .5rem">Thank you for contributing to SwaraLanka! Your notation will be reviewed and added to the library within 24 hours.</p>
+    <p style="color:var(--text3);font-size:.85rem;margin-bottom:2rem" id="subSongName"></p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="browse.html"><button class="btn btn-gold" style="padding:11px 24px">Browse Songs</button></a>
+      <button class="btn btn-outline" style="padding:11px 24px" onclick="resetForm()">Submit Another</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a><p>Sri Lanka's largest free Sinhala music notation portal.</p></div>
+    <div class="footer-col"><h4>Contribute</h4><a href="submit.html">Submit Notation</a><a href="request.html">Request a Song</a></div>
+    <div class="footer-col"><h4>Browse</h4><a href="browse.html">All Songs</a><a href="genre.html">By Genre</a></div>
+    <div class="footer-col"><h4>Links</h4><a href="index.html">Home</a><a href="login.html">Login</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2025 SwaraLanka 🇱🇰</p></div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/nav.js"></script>
+<script>
+injectNav('');
+
+const NOTES = ['C','D','E','F','G','A','B','–'];
+const NOTE_COLORS = {C:'#4ade80',D:'#818cf8',E:'#f87171',F:'#fbbf24',G:'#38bdf8',A:'#e879f9',B:'#fb923c','–':'#6b7280'};
+const NOTE_BG = {C:'#1a2a1a',D:'#1a1a2a',E:'#2a1a1a',F:'#2a2a1a',G:'#1a2a2a',A:'#2a1a2a',B:'#2a2218','–':'#1e1e28'};
+
+let rows = [];
+
+function addNoteRow(sectionName) {
+  const id = Date.now();
+  const row = { id, section: sectionName || 'Verse', notes: ['C','D','E','F','G','C','–'], lyric: '' };
+  rows.push(row);
+  renderEditor();
+  updatePreview();
+}
+
+function renderEditor() {
+  const grid = document.getElementById('noteEditorGrid');
+  grid.innerHTML = rows.map((row,ri) => `
+    <div class="notation-row-edit" id="er-${row.id}">
+      <div class="notation-row-top">
+        <select style="background:var(--bg4);border:1px solid var(--border2);color:var(--text2);border-radius:6px;padding:4px 8px;font-size:.78rem;font-family:'DM Sans',sans-serif" onchange="rows[${ri}].section=this.value;updatePreview()">
+          ${['Intro','Verse 1','Chorus','Verse 2','Bridge','Outro'].map(s=>`<option ${row.section===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+        <div class="nr-actions">
+          <button class="nr-btn" onclick="addNote(${ri})">+ Note</button>
+          <button class="nr-btn" onclick="rows.splice(${ri},1);renderEditor();updatePreview()">✕ Remove</button>
+        </div>
+      </div>
+      <div class="notes-input-row">
+        ${row.notes.map((n,ni)=>`
+          <div class="note-input-wrap">
+            <div class="note-preview" style="background:${NOTE_BG[n]};color:${NOTE_COLORS[n]}">${n}</div>
+            <select onchange="rows[${ri}].notes[${ni}]=this.value;renderEditor();updatePreview()">
+              ${NOTES.map(x=>`<option ${n===x?'selected':''}>${x}</option>`).join('')}
+            </select>
+          </div>
+        `).join('')}
+      </div>
+      <input class="lyric-inp" type="text" placeholder="Lyrics for this line (optional)…" value="${row.lyric}" oninput="rows[${ri}].lyric=this.value;updatePreview()"/>
+    </div>
+  `).join('');
+}
+
+function addNote(ri) {
+  rows[ri].notes.push('C');
+  renderEditor();
+  updatePreview();
+}
+
+function updatePreview() {
+  const prev = document.getElementById('livePreview');
+  if(rows.length===0){prev.innerHTML='<div style="color:var(--text3);font-size:.85rem">Start entering notes above to see preview…</div>';return;}
+  let html='';
+  let lastSection='';
+  rows.forEach(row=>{
+    if(row.section!==lastSection){html+=`<div style="font-size:.7rem;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;margin-top:${lastSection?'14px':'0'}">${row.section}</div>`;lastSection=row.section;}
+    html+=`<div class="note-row">${row.notes.map(n=>`<span class="note note-${n.toLowerCase().replace('–','rest')}">${n}</span>`).join('')}</div>`;
+    if(row.lyric)html+=`<div class="note-lyric">${row.lyric}</div>`;
+  });
+  prev.innerHTML=html;
+}
+
+function doSubmit(){
+  const title=document.getElementById('subTitle').value.trim();
+  const artist=document.getElementById('subArtist').value.trim();
+  const name=document.getElementById('subName').value.trim();
+  const email=document.getElementById('subEmail').value.trim();
+  if(!title||!artist||!name||!email){alert('Please fill in all required fields marked with ✦');return;}
+  if(rows.length===0){alert('Please add at least one line of notation!');return;}
+  SL.addSubmission({title,artist,name,email,instrument:document.getElementById('subInstr').value,key:document.getElementById('subKey').value,difficulty:document.getElementById('subDiff').value,genre:document.getElementById('subGenre').value,notes:rows});
+  document.getElementById('formCard').style.display='none';
+  document.getElementById('successCard').classList.add('show');
+  document.getElementById('subSongName').textContent=`"${title}" by ${artist}`;
+}
+
+function resetForm(){
+  rows=[];
+  document.getElementById('formCard').style.display='';
+  document.getElementById('successCard').classList.remove('show');
+  document.getElementById('subTitle').value='';
+  document.getElementById('subArtist').value='';
+  document.getElementById('subName').value='';
+  document.getElementById('subEmail').value='';
+  renderEditor();updatePreview();
+}
+
+// Auto-fill if logged in
+if(SL.isLoggedIn()){
+  document.getElementById('subName').value=SL.user.name||'';
+  document.getElementById('subEmail').value=SL.user.email||'';
+}
+
+// Start with 2 rows
+addNoteRow('Intro');
+addNoteRow('Verse 1');
+</script>
+</body>
+</html>

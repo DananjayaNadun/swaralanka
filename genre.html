@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browse by Genre — SwaraLanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.genre-page{max-width:1200px;margin:0 auto;padding:108px 5% 60px}
+.page-header{margin-bottom:2.5rem}
+.page-header h1{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:700}
+.page-header h1 span{color:var(--gold)}
+.page-header p{color:var(--text2);margin-top:.4rem}
+
+/* GENRE HERO CARDS */
+.genres-hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:3rem}
+.genre-card{border-radius:var(--radius);padding:28px 20px;cursor:pointer;transition:all .28s;position:relative;overflow:hidden;border:1px solid transparent}
+.genre-card:hover{transform:translateY(-4px);box-shadow:0 18px 44px rgba(0,0,0,.35)}
+.genre-card::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(0,0,0,.6));pointer-events:none}
+.genre-card.active{border-color:var(--gold)}
+.genre-card .g-icon{font-size:2.2rem;margin-bottom:.8rem;position:relative;z-index:1}
+.genre-card .g-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;position:relative;z-index:1}
+.genre-card .g-count{font-size:.78rem;opacity:.8;margin-top:.3rem;position:relative;z-index:1}
+
+/* Genre colour themes */
+.g-traditional{background:linear-gradient(135deg,#2a1a0a,#4a2c10)}
+.g-classical{background:linear-gradient(135deg,#0a0a2a,#1a1a4a)}
+.g-ballad{background:linear-gradient(135deg,#1a0a2a,#2a1040)}
+.g-pop{background:linear-gradient(135deg,#0a1a2a,#103040)}
+.g-rock{background:linear-gradient(135deg,#1a0a0a,#3a1010)}
+.g-folk{background:linear-gradient(135deg,#0a1a0a,#103010)}
+
+/* SONGS SECTION */
+.genre-songs-section{animation:fadeIn .4s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.genre-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:10px}
+.genre-section-header h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700}
+.genre-section-header h2 span{color:var(--gold)}
+.genre-section-header p{font-size:.85rem;color:var(--text3)}
+.back-btn{padding:8px 16px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:.83rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;gap:6px}
+.back-btn:hover{border-color:var(--border);color:var(--gold)}
+
+/* SONG CARDS */
+.genre-songs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.song-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;text-decoration:none;color:inherit}
+.song-card::after{content:'';position:absolute;left:0;top:0;width:3px;height:0;background:linear-gradient(to bottom,var(--gold),var(--gold-light));transition:height .25s}
+.song-card:hover{border-color:rgba(201,168,76,.25);background:var(--bg3);transform:translateX(3px)}
+.song-card:hover::after{height:100%}
+.song-num{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--text3);min-width:24px}
+.song-info{flex:1;min-width:0}
+.song-title{font-weight:500;font-size:.9rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.song-artist{font-size:.75rem;color:var(--text3);margin-top:2px}
+.song-badges{display:flex;gap:4px;margin-top:.35rem;flex-wrap:wrap}
+.arrow{color:var(--text3);transition:transform .22s}
+.song-card:hover .arrow{transform:translateX(3px);color:var(--gold)}
+
+/* STATS BAR */
+.genre-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:2rem}
+.gstat{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px;text-align:center}
+.gstat .num{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--gold)}
+.gstat .lbl{font-size:.74rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.2rem}
+
+/* INFO CARD */
+.genre-info-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:20px 24px;margin-bottom:1.5rem;display:flex;gap:16px;align-items:flex-start}
+.genre-info-icon{font-size:2rem;flex-shrink:0}
+.genre-info-card h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;margin-bottom:.35rem}
+.genre-info-card p{font-size:.87rem;color:var(--text2);line-height:1.65}
+
+@media(max-width:600px){.genre-stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav id="mainNav"></nav>
+
+<div class="genre-page">
+  <div class="page-header" id="pageHeader">
+    <h1>Browse by <span>Genre</span></h1>
+    <p>Explore Sinhala music notations by musical style and tradition.</p>
+  </div>
+
+  <!-- GENRE CARDS -->
+  <div class="genres-hero" id="genresHero"></div>
+
+  <!-- SONGS SECTION (shown when genre selected) -->
+  <div id="genreSongsSection" style="display:none"></div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a><p>Sri Lanka's largest free Sinhala music notation portal.</p></div>
+    <div class="footer-col"><h4>Browse</h4><a href="browse.html">All Songs</a><a href="genre.html">By Genre</a><a href="artist.html">Artists</a></div>
+    <div class="footer-col"><h4>Community</h4><a href="submit.html">Submit</a><a href="request.html">Request</a></div>
+    <div class="footer-col"><h4>Links</h4><a href="index.html">Home</a><a href="login.html">Login</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2025 SwaraLanka 🇱🇰</p></div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/nav.js"></script>
+<script>
+injectNav('genre');
+
+const GENRES = [
+  { name:'Traditional', icon:'🪘', cls:'g-traditional', desc:'Ancient Sri Lankan traditional melodies passed down through generations. Includes folk songs, ritual music, and ceremonial pieces rooted in Sinhala culture.' },
+  { name:'Classical', icon:'🎻', cls:'g-classical', desc:'Refined classical Sinhala compositions influenced by both Eastern and Western musical traditions. Often features complex melodies and rich harmonies.' },
+  { name:'Ballad', icon:'🎹', cls:'g-ballad', desc:'Deeply emotional and lyrical songs that tell stories of love, longing, and life. A beloved genre in Sri Lankan popular music since the 1960s.' },
+  { name:'Pop', icon:'🎵', cls:'g-pop', desc:'Modern Sinhala pop songs that blend Western pop influences with traditional Sri Lankan melodies. Fresh, upbeat, and widely loved.' },
+  { name:'Rock', icon:'🎸', cls:'g-rock', desc:'Sri Lankan rock music that fuses Western rock guitar with Sinhala lyrics and local musical sensibilities. Bold and energetic.' },
+  { name:'Folk', icon:'🌿', cls:'g-folk', desc:'Rural Sinhala folk traditions — simple, heartfelt songs passed down through generations, reflecting village life and nature.' },
+];
+
+// Build genre stats from SONGS
+const genreMap = {};
+SONGS.forEach(s => {
+  if(!genreMap[s.genre]) genreMap[s.genre] = [];
+  genreMap[s.genre].push(s);
+});
+
+// Render genre cards
+const hero = document.getElementById('genresHero');
+GENRES.forEach(g => {
+  const songs = genreMap[g.name] || [];
+  const card = document.createElement('div');
+  card.className=`genre-card ${g.cls}`;
+  card.innerHTML=`<div class="g-icon">${g.icon}</div><div class="g-name">${g.name}</div><div class="g-count">${songs.length} notation${songs.length!==1?'s':''}</div>`;
+  card.onclick=()=>showGenre(g,songs);
+  hero.appendChild(card);
+});
+
+function showGenre(g, songs){
+  // Highlight selected
+  document.querySelectorAll('.genre-card').forEach(c=>c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  const section=document.getElementById('genreSongsSection');
+  const instruments=[...new Set(songs.flatMap(s=>s.instruments))];
+  const easy=songs.filter(s=>s.difficulty==='easy').length;
+
+  section.style.display='block';
+  section.innerHTML=`
+    <div class="genre-songs-section">
+      <div class="genre-section-header">
+        <div>
+          <h2>${g.icon} <span>${g.name}</span> Songs</h2>
+          <p>${songs.length} notation${songs.length!==1?'s':''} available</p>
+        </div>
+        <button class="back-btn" onclick="closeGenre()">← Back to All Genres</button>
+      </div>
+
+      <div class="genre-info-card">
+        <div class="genre-info-icon">${g.icon}</div>
+        <div><h3>About ${g.name} Music</h3><p>${g.desc}</p></div>
+      </div>
+
+      <div class="genre-stats">
+        <div class="gstat"><div class="num">${songs.length}</div><div class="lbl">Songs</div></div>
+        <div class="gstat"><div class="num">${easy}</div><div class="lbl">Easy Level</div></div>
+        <div class="gstat"><div class="num">${instruments.length}</div><div class="lbl">Instruments</div></div>
+      </div>
+
+      <div class="genre-songs-grid">
+        ${songs.map((s,i)=>`
+          <a class="song-card" href="song.html?id=${s.id}">
+            <span class="song-num">${String(i+1).padStart(2,'0')}</span>
+            <div class="song-info">
+              <div class="song-title">${s.title}</div>
+              <div class="song-artist">${s.artist}</div>
+              <div class="song-badges">${s.instruments.map(instrBadge).join('')}${diffBadge(s.difficulty)}</div>
+            </div>
+            <span class="arrow">›</span>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  section.scrollIntoView({behavior:'smooth',block:'start',inline:'nearest'});
+}
+
+function closeGenre(){
+  document.getElementById('genreSongsSection').style.display='none';
+  document.querySelectorAll('.genre-card').forEach(c=>c.classList.remove('active'));
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Auto-open from URL param
+const urlGenre=new URLSearchParams(location.search).get('g');
+if(urlGenre){
+  const g=GENRES.find(x=>x.name.toLowerCase()===urlGenre.toLowerCase());
+  if(g) setTimeout(()=>{const songs=genreMap[g.name]||[];showGenre(g,songs);},100);
+}
+</script>
+</body>
+</html>

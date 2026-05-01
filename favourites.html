@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Favourites — SwaraLanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.page-top{padding:108px 5% 44px;background:linear-gradient(to bottom,var(--bg2),var(--bg));border-bottom:1px solid var(--border2)}
+.page-top-inner{max-width:1200px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.page-top h1{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700}
+.page-top h1 span{color:var(--gold)}
+.page-top p{color:var(--text2);font-size:.9rem;margin-top:.3rem}
+.fav-count-badge{background:var(--gold-pale);border:1px solid var(--border);border-radius:50px;padding:6px 16px;font-size:.82rem;color:var(--gold);font-weight:600}
+
+.fav-body{max-width:1200px;margin:0 auto;padding:36px 5%}
+
+/* STATS ROW */
+.fav-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:2.5rem}
+.fav-stat{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:20px 18px;text-align:center}
+.fav-stat .num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--gold);display:block}
+.fav-stat .lbl{font-size:.78rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:.25rem}
+
+/* FILTER ROW */
+.fav-filter{display:flex;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
+.fav-filter-pill{padding:6px 14px;border-radius:50px;border:1px solid var(--border2);font-size:.8rem;color:var(--text2);cursor:pointer;transition:all .2s;background:transparent;font-family:'DM Sans',sans-serif}
+.fav-filter-pill.active{background:var(--gold-pale);border-color:var(--border);color:var(--gold);font-weight:600}
+.fav-filter span{color:var(--text3);font-size:.82rem;margin-left:auto}
+
+/* FAV CARD */
+.favs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.fav-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:18px 20px;display:flex;align-items:center;gap:14px;transition:all .25s;position:relative;overflow:hidden}
+.fav-card::after{content:'';position:absolute;left:0;top:0;width:3px;height:0;background:linear-gradient(to bottom,var(--gold),var(--gold-light));transition:height .25s}
+.fav-card:hover{border-color:rgba(201,168,76,.25);transform:translateX(3px)}
+.fav-card:hover::after{height:100%}
+.fav-card-icon{width:44px;height:44px;background:var(--gold-pale);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;border:1px solid var(--border)}
+.fav-info{flex:1;min-width:0}
+.fav-title{font-weight:500;font-size:.92rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fav-artist{font-size:.76rem;color:var(--text3);margin-top:2px}
+.fav-badges{display:flex;gap:4px;margin-top:.4rem;flex-wrap:wrap}
+.fav-actions{display:flex;flex-direction:column;gap:5px;flex-shrink:0}
+.fav-btn{width:30px;height:30px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .2s}
+.fav-btn:hover{border-color:var(--border);color:var(--gold)}
+.fav-btn.remove:hover{border-color:rgba(248,113,113,.4);color:#f87171}
+
+/* EMPTY STATE */
+.empty-favs{text-align:center;padding:80px 20px}
+.empty-ico{font-size:3.5rem;opacity:.35;margin-bottom:1rem}
+.empty-favs h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--text2);margin-bottom:.5rem}
+.empty-favs p{color:var(--text3);font-size:.9rem;margin-bottom:1.5rem}
+
+/* LOGIN PROMPT */
+.login-prompt{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:48px 32px;text-align:center;max-width:480px;margin:80px auto}
+.login-prompt h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;margin-bottom:.6rem}
+.login-prompt p{color:var(--text2);font-size:.9rem;margin-bottom:1.5rem}
+
+@media(max-width:600px){.fav-stats{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<nav id="mainNav"></nav>
+
+<div class="page-top">
+  <div class="page-top-inner">
+    <div>
+      <h1>My <span>Favourites</span></h1>
+      <p>All your saved Sinhala music notations in one place.</p>
+    </div>
+    <div class="fav-count-badge" id="favCountBadge">0 songs saved</div>
+  </div>
+</div>
+
+<div class="fav-body" id="favBody">
+  <!-- Injected by JS -->
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand"><a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a><p>Sri Lanka's largest free Sinhala music notation portal.</p></div>
+    <div class="footer-col"><h4>Browse</h4><a href="browse.html">All Songs</a><a href="genre.html">By Genre</a><a href="artist.html">By Artist</a></div>
+    <div class="footer-col"><h4>My Account</h4><a href="favourites.html">Favourites</a><a href="request.html">My Requests</a><a href="submit.html">Submit Notation</a></div>
+    <div class="footer-col"><h4>Links</h4><a href="index.html">Home</a><a href="login.html">Login</a></div>
+  </div>
+  <div class="footer-bottom"><p>© 2025 SwaraLanka 🇱🇰</p></div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/nav.js"></script>
+<script>
+injectNav('');
+const body = document.getElementById('favBody');
+
+function render() {
+  if (!SL.isLoggedIn()) {
+    body.innerHTML = `<div class="login-prompt">
+      <div style="font-size:3rem;margin-bottom:1rem">♡</div>
+      <h2>Save Your Favourites</h2>
+      <p>Create a free account to save songs, track your progress, and build your personal notation library.</p>
+      <a href="login.html"><button class="btn btn-gold" style="padding:12px 28px;font-size:.95rem;width:100%;margin-bottom:10px">Login to See Favourites</button></a>
+      <a href="login.html?mode=register"><button class="btn btn-outline" style="padding:11px 28px;font-size:.9rem;width:100%">Register Free →</button></a>
+    </div>`;
+    return;
+  }
+
+  const songs = SL.getFavSongs();
+  const count = songs.length;
+  document.getElementById('favCountBadge').textContent = `${count} song${count!==1?'s':''} saved`;
+
+  if (count === 0) {
+    body.innerHTML = `<div class="empty-favs">
+      <div class="empty-ico">♡</div>
+      <h3>No Favourites Yet</h3>
+      <p>Browse songs and tap the heart icon to save your favourites here.</p>
+      <a href="browse.html"><button class="btn btn-gold" style="padding:11px 28px">Browse Songs →</button></a>
+    </div>`;
+    return;
+  }
+
+  // Stats
+  const instruments = [...new Set(songs.flatMap(s=>s.instruments))];
+  const artists = [...new Set(songs.map(s=>s.artist))];
+  const easy = songs.filter(s=>s.difficulty==='easy').length;
+
+  body.innerHTML = `
+    <div class="fav-stats">
+      <div class="fav-stat"><span class="num">${count}</span><span class="lbl">Saved Songs</span></div>
+      <div class="fav-stat"><span class="num">${artists.length}</span><span class="lbl">Artists</span></div>
+      <div class="fav-stat"><span class="num">${instruments.length}</span><span class="lbl">Instruments</span></div>
+      <div class="fav-stat"><span class="num">${easy}</span><span class="lbl">Easy Songs</span></div>
+    </div>
+    <div class="fav-filter" id="favFilter">
+      <button class="fav-filter-pill active" data-f="all" onclick="filterFavs('all')">All Songs</button>
+      ${instruments.map(i=>`<button class="fav-filter-pill" data-f="${i}" onclick="filterFavs('${i}')">${i.charAt(0).toUpperCase()+i.slice(1)}</button>`).join('')}
+      <span id="favFilterCount">${count} songs</span>
+    </div>
+    <div class="favs-grid" id="favsGrid"></div>
+  `;
+  renderCards(songs);
+}
+
+const instrIco = {piano:'🎹',guitar:'🎸',violin:'🎻',flute:'🪗',drums:'🥁'};
+
+function renderCards(songs) {
+  const grid = document.getElementById('favsGrid');
+  if (!grid) return;
+  grid.innerHTML = songs.map(s=>`
+    <div class="fav-card" id="fcard-${s.id}">
+      <div class="fav-card-icon">${instrIco[s.instruments[0]]||'🎵'}</div>
+      <div class="fav-info">
+        <div class="fav-title">${s.title}</div>
+        <div class="fav-artist">${s.artist}</div>
+        <div class="fav-badges">${s.instruments.map(instrBadge).join('')}${diffBadge(s.difficulty)}</div>
+      </div>
+      <div class="fav-actions">
+        <button class="fav-btn" onclick="window.location='song.html?id=${s.id}'" title="View notation">→</button>
+        <button class="fav-btn remove" onclick="removeFav(${s.id})" title="Remove from favourites">♡</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+let currentFilter='all';
+function filterFavs(f){
+  currentFilter=f;
+  document.querySelectorAll('.fav-filter-pill').forEach(p=>p.classList.toggle('active',p.dataset.f===f));
+  const songs=SL.getFavSongs().filter(s=>f==='all'||s.instruments.includes(f));
+  document.getElementById('favFilterCount').textContent=songs.length+' songs';
+  renderCards(songs);
+}
+
+function removeFav(id){
+  SL.toggleFav(id);
+  document.getElementById('fcard-'+id)?.remove();
+  const remaining=SL.getFavSongs().filter(s=>currentFilter==='all'||s.instruments.includes(currentFilter));
+  const count=SL.favs.length;
+  document.getElementById('favCountBadge').textContent=`${count} song${count!==1?'s':''} saved`;
+  if(count===0)render();
+}
+
+render();
+document.addEventListener('sl:authchange',render);
+</script>
+</body>
+</html>
