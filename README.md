@@ -59,7 +59,7 @@ open index.html
 1. Push to GitHub
 2. Go to **Settings → Pages**
 3. Set source to `main` branch → `/ (root)`
-4. Your site is live at `https://YOUR-USERNAME.github.io/swaralanka`
+4. Your site is live at `https://dananjayanadun.github.io/swaralanka`
 
 ---
 
