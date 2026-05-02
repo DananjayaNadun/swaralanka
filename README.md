@@ -41,41 +41,6 @@
 | Firebase *(coming soon)* | Database, Auth, Hosting |
 | GitHub Pages | Free static hosting |
 
----
-
-## 🚀 Getting Started
-
-### Run Locally
-```bash
-# Clone the repo
-git clone https://github.com/dananjayanadun/swaralanka.git
-
-# Open in browser
-cd swaralanka
-open index.html
-```
-
-### Deploy to GitHub Pages
-1. Push to GitHub
-2. Go to **Settings → Pages**
-3. Set source to `main` branch → `/ (root)`
-4. Your site is live at `https://dananjayanadun.github.io/swaralanka`
-
----
-
-## 📁 Project Structure
-
-```
-swaralanka/
-├── index.html          # Landing page
-├── browse.html         # Browse & search songs
-├── song.html           # Song notation viewer
-├── css/
-│   └── style.css       # Shared styles
-├── js/
-│   └── data.js         # Song database & utilities
-└── README.md
-```
 
 ---
 
@@ -91,15 +56,6 @@ swaralanka/
 - [ ] Mobile app (React Native)
 - [ ] 5,000+ real song notations
 
----
-
-## 🤝 Contributing
-
-Contributions are welcome! If you're a Sri Lankan musician and want to add notations:
-
-1. Fork the repo
-2. Add your notation to `js/data.js`
-3. Submit a Pull Request
 
 ---
 
