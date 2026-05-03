@@ -200,11 +200,15 @@ function doLogin(e) {
   const email=document.getElementById('loginEmail').value;
   const pass=document.getElementById('loginPassword').value;
   if(!email||!pass){showErr('Please fill in all fields.');return;}
-  // Simulate login (swap with Firebase Auth when ready)
-  const name = email.split('@')[0].charAt(0).toUpperCase()+email.split('@')[0].slice(1);
-  SL.login(name, email);
+  const name = email.split('@')[0].replace(/[^a-zA-Z]/g,' ').trim();
+  const displayName = name.charAt(0).toUpperCase()+name.slice(1)||'User';
+  SL.login(displayName, email);
   showSuccess('Welcome back! Redirecting…');
-  setTimeout(()=>window.location=document.referrer||'index.html',1200);
+  setTimeout(()=>{
+    const dest=sessionStorage.getItem('sl_redirect')||'index.html';
+    sessionStorage.removeItem('sl_redirect');
+    window.location=dest;
+  },1200);
 }
 
 function doRegister(e) {
@@ -215,16 +219,25 @@ function doRegister(e) {
   const pass=document.getElementById('regPassword').value;
   if(!first||!email||!pass){showErr('Please fill in all required fields.');return;}
   if(pass.length<8){showErr('Password must be at least 8 characters.');return;}
-  SL.login(`${first} ${last}`, email);
+  SL.login(`${first} ${last}`.trim(), email);
   showSuccess(`Welcome to SwaraLanka, ${first}! 🎵 Redirecting…`);
-  setTimeout(()=>window.location='index.html',1400);
+  setTimeout(()=>{
+    const dest=sessionStorage.getItem('sl_redirect')||'index.html';
+    sessionStorage.removeItem('sl_redirect');
+    window.location=dest;
+  },1400);
 }
 
 function googleLogin() {
-  // Simulate Google login for demo — swap with Firebase Google Auth when ready
-  SL.login('Google User', 'user@gmail.com');
-  showSuccess('Signed in with Google! Redirecting…');
-  setTimeout(()=>window.location='index.html',1200);
+  const name=prompt('Enter your name to continue:','');
+  if(!name) return;
+  SL.login(name.trim()||'User','google@swaralanka.lk');
+  showSuccess('Signed in! Redirecting…');
+  setTimeout(()=>{
+    const dest=sessionStorage.getItem('sl_redirect')||'index.html';
+    sessionStorage.removeItem('sl_redirect');
+    window.location=dest;
+  },1200);
 }
 
 function togglePw(id,btn){

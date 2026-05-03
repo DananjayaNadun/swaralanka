@@ -82,19 +82,7 @@
 </head>
 <body>
 
-<nav>
-  <a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="browse.html">Browse</a>
-    <a href="browse.html?filter=piano">Piano</a>
-    <a href="browse.html?filter=guitar">Guitar</a>
-  </div>
-  <div class="nav-btns">
-    <button class="btn btn-outline">Login</button>
-    <button class="btn btn-gold">Register Free</button>
-  </div>
-</nav>
+<nav id="mainNav"></nav>
 
 <div class="song-page">
   <div class="breadcrumb">
@@ -126,9 +114,9 @@
         </div>
         <div class="song-actions">
           <button class="btn btn-gold" onclick="window.print()">🖨 Print</button>
-          <button class="btn btn-outline" onclick="alert('PDF download — connect Firebase to enable!')">📥 PDF</button>
+          <button class="btn btn-outline" onclick="alert('PDF download coming soon!')">📥 PDF</button>
           <button class="btn btn-outline" onclick="toggleLike(this)">♡ Like</button>
-          <button class="btn btn-outline" onclick="alert('Sign in to save favourites!')">🔖 Save</button>
+          <button class="btn btn-outline" id="favBtn" onclick="toggleFav()">🔖 Save</button>
         </div>
       </div>
 
@@ -193,7 +181,10 @@
 </footer>
 
 <script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/nav.js"></script>
 <script>
+injectNav('browse');
 const params=new URLSearchParams(location.search);
 const id=parseInt(params.get('id'))||1;
 const song=SONGS.find(s=>s.id===id)||SONGS[0];
@@ -269,6 +260,21 @@ function setFont(size){
   const c=document.getElementById('notationContent');
   c.className=`notation-content font-${size}`;
 }
+function toggleFav(){
+  if(!SL.isLoggedIn()){
+    sessionStorage.setItem('sl_redirect',location.href);
+    window.location='login.html';return;
+  }
+  const added=SL.toggleFav(song.id);
+  const btn=document.getElementById('favBtn');
+  if(btn){btn.textContent=added?'💛 Saved':'🔖 Save';btn.style.color=added?'var(--gold)':'';}
+  updateNavFavCount();
+}
+// Init fav button state
+document.addEventListener('DOMContentLoaded',()=>{
+  const btn=document.getElementById('favBtn');
+  if(btn&&SL.isFav(song.id)){btn.textContent='💛 Saved';btn.style.color='var(--gold)';}
+});
 function toggleLike(btn){
   btn.classList.toggle('liked');
   const liked=btn.classList.contains('liked');

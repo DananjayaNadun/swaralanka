@@ -58,20 +58,7 @@
 </head>
 <body>
 
-<nav>
-  <a class="logo" href="index.html"><div class="logo-icon">🎵</div><div class="logo-text">Swara<span>Lanka</span></div></a>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="browse.html" class="active">Browse</a>
-    <a href="browse.html?filter=piano">Piano</a>
-    <a href="browse.html?filter=guitar">Guitar</a>
-    <a href="browse.html?filter=artists">Artists</a>
-  </div>
-  <div class="nav-btns">
-    <button class="btn btn-outline">Login</button>
-    <button class="btn btn-gold">Register Free</button>
-  </div>
-</nav>
+<nav id="mainNav"></nav>
 
 <div class="page-hero">
   <h1>Browse <span>All Songs</span></h1>
@@ -143,7 +130,10 @@
 </footer>
 
 <script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/nav.js"></script>
 <script>
+injectNav('browse');
 let filtered=[], page=0, perPage=12;
 
 function getFilters(){
@@ -176,8 +166,8 @@ function applyFilters(){
   else if(f.sort==='likes') filtered.sort((a,b)=>b.likes-a.likes);
   else filtered.sort((a,b)=>b.views-a.views);
   page=0;
-  document.getElementById('resultCount').textContent=filtered.length+' songs';
-  document.getElementById('resultsCount').textContent=filtered.length+' songs';
+  const rc=document.getElementById('resultsCount');
+  if(rc) rc.textContent=filtered.length+' songs';
   renderSongs(true);
 }
 

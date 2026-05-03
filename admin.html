@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — SwaraLanka</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<style>
+/* ── LOCK SCREEN ── */
+.lock-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg)}
+.lock-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:44px 36px;width:100%;max-width:380px;text-align:center}
+.lock-icon{font-size:3rem;margin-bottom:1rem}
+.lock-card h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;margin-bottom:.4rem}
+.lock-card p{color:var(--text2);font-size:.88rem;margin-bottom:1.8rem}
+.lock-input{width:100%;padding:14px 16px;border-radius:9px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:1rem;font-family:'DM Sans',sans-serif;outline:none;text-align:center;letter-spacing:.2em;margin-bottom:12px;transition:border-color .2s}
+.lock-input:focus{border-color:var(--border)}
+.lock-btn{width:100%;padding:13px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;color:#0B0C18;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.lock-err{color:#f87171;font-size:.82rem;margin-top:8px;display:none}
+.lock-err.show{display:block}
+.lock-hint{font-size:.76rem;color:var(--text3);margin-top:10px}
+
+/* ── ADMIN LAYOUT ── */
+.admin-page{display:none;min-height:100vh;background:var(--bg)}
+.admin-topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:0 2%;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.admin-topbar .logo{display:flex;align-items:center;gap:8px}
+.admin-topbar .logo-text{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700}
+.admin-topbar .logo-text span{color:var(--gold)}
+.admin-badge{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);border-radius:50px;padding:3px 12px;font-size:.72rem;color:#f87171;font-weight:600}
+.topbar-right{display:flex;gap:10px;align-items:center}
+.admin-stats-bar{display:flex;gap:0;border-bottom:1px solid var(--border2);background:var(--bg2)}
+.astat{flex:1;padding:16px 20px;text-align:center;border-right:1px solid var(--border2)}
+.astat:last-child{border:none}
+.astat .num{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--gold)}
+.astat .lbl{font-size:.72rem;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+
+/* ── TABS ── */
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--border2);padding:0 2%;background:var(--bg2)}
+.atab{padding:14px 20px;border-bottom:2px solid transparent;font-size:.88rem;font-weight:500;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;background:none;border-top:none;border-left:none;border-right:none}
+.atab.active{border-bottom-color:var(--gold);color:var(--gold);font-weight:600}
+.atab:hover{color:var(--text)}
+
+/* ── PANELS ── */
+.admin-panel{display:none;padding:28px 2%}
+.admin-panel.active{display:block}
+
+/* SONGS TABLE */
+.admin-toolbar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.admin-search{flex:1;min-width:200px;position:relative}
+.admin-search input{width:100%;padding:10px 14px 10px 38px;border-radius:8px;background:var(--bg2);border:1px solid var(--border2);color:var(--text);font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none}
+.admin-search input:focus{border-color:var(--border)}
+.admin-search .ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:.9rem}
+.add-song-btn{padding:10px 20px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-light));border:none;color:#0B0C18;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+
+.songs-table-wrap{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;overflow-x:auto}
+.songs-table{width:100%;border-collapse:collapse;min-width:700px}
+.songs-table th{background:var(--bg3);padding:12px 16px;text-align:left;font-size:.75rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;border-bottom:1px solid var(--border2)}
+.songs-table td{padding:13px 16px;font-size:.87rem;border-bottom:1px solid var(--border2);vertical-align:middle}
+.songs-table tr:last-child td{border:none}
+.songs-table tr:hover td{background:rgba(255,255,255,.02)}
+.songs-table .song-title-cell{font-weight:500;color:var(--text)}
+.songs-table .song-artist-cell{color:var(--text2)}
+.songs-table .badges-cell{display:flex;gap:4px;flex-wrap:wrap}
+.action-btn{padding:5px 12px;border-radius:6px;font-size:.75rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid;transition:all .2s}
+.action-btn.edit{border-color:rgba(129,140,248,.4);color:#818cf8;background:rgba(129,140,248,.08)}
+.action-btn.edit:hover{background:rgba(129,140,248,.18)}
+.action-btn.del{border-color:rgba(248,113,113,.4);color:#f87171;background:rgba(248,113,113,.08)}
+.action-btn.del:hover{background:rgba(248,113,113,.18)}
+.action-btn.view{border-color:var(--border2);color:var(--text3);background:transparent}
+.action-btn.view:hover{border-color:var(--border);color:var(--text)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);width:100%;max-width:600px;max-height:90vh;overflow-y:auto}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between}
+.modal-header h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600}
+.modal-close{width:32px;height:32px;border-radius:7px;border:1px solid var(--border2);background:transparent;color:var(--text3);cursor:pointer;font-size:1rem}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--border2);display:flex;justify-content:flex-end;gap:10px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:14px}
+.field label{font-size:.78rem;color:var(--text2);font-weight:500}
+.field input,.field select,.field textarea{padding:11px 13px;border-radius:8px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:.88rem;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;width:100%}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--border)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.instr-checkboxes{display:flex;flex-wrap:wrap;gap:8px}
+.instr-cb{display:flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:7px 12px;cursor:pointer;font-size:.83rem;color:var(--text2);transition:all .2s}
+.instr-cb input{accent-color:var(--gold)}
+.instr-cb:has(input:checked){border-color:var(--border);color:var(--gold);background:var(--gold-pale)}
+
+/* REQUESTS PANEL */
+.req-admin-list{display:flex;flex-direction:column;gap:10px}
+.req-admin-item{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:14px}
+.req-admin-info{flex:1}
+.req-admin-title{font-weight:500;font-size:.9rem}
+.req-admin-meta{font-size:.78rem;color:var(--text3);margin-top:3px}
+.req-votes{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--gold);min-width:40px;text-align:center}
+
+/* SUBMISSIONS PANEL */
+.sub-item{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:16px;margin-bottom:10px}
+.sub-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.sub-title{font-weight:600;font-size:.92rem}
+.sub-by{font-size:.78rem;color:var(--text3)}
+.sub-actions{display:flex;gap:8px}
+.approve-btn{padding:6px 14px;border-radius:6px;border:none;background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.35);color:#34D399;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.reject-btn{padding:6px 14px;border-radius:6px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#f87171;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px 18px;font-size:.88rem;color:var(--text);z-index:300;transform:translateY(20px);opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.success{border-color:rgba(52,211,153,.4);color:#34D399}
+.toast.error{border-color:rgba(248,113,113,.4);color:#f87171}
+
+@media(max-width:700px){.admin-stats-bar{flex-wrap:wrap}.astat{min-width:50%}.field-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-card">
+    <div class="lock-icon">🔐</div>
+    <h2>Admin Access</h2>
+    <p>SwaraLanka Admin Panel — authorized personnel only.</p>
+    <input class="lock-input" type="password" id="adminPass" placeholder="••••••••" autocomplete="off"
+      onkeydown="if(event.key==='Enter')checkPass()"/>
+    <button class="lock-btn" onclick="checkPass()">Enter Admin Panel</button>
+    <div class="lock-err" id="lockErr">Wrong password. Try again.</div>
+    <p class="lock-hint">This page is not linked publicly. Keep the URL private.</p>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-page" id="adminPage">
+
+  <!-- TOP BAR -->
+  <div class="admin-topbar">
+    <div class="logo">
+      <div class="logo-icon" style="width:30px;height:30px;font-size:15px">🎵</div>
+      <div class="logo-text">Swara<span>Lanka</span></div>
+      <span class="admin-badge" style="margin-left:8px">ADMIN</span>
+    </div>
+    <div class="topbar-right">
+      <a href="index.html" target="_blank"><button class="btn btn-outline" style="padding:7px 14px;font-size:.8rem">View Site →</button></a>
+      <button class="btn btn-outline" style="padding:7px 14px;font-size:.8rem;color:#f87171;border-color:rgba(248,113,113,.3)" onclick="lockAdmin()">🔒 Lock</button>
+    </div>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="admin-stats-bar">
+    <div class="astat"><div class="num" id="statSongs">0</div><div class="lbl">Total Songs</div></div>
+    <div class="astat"><div class="num" id="statRequests">0</div><div class="lbl">Requests</div></div>
+    <div class="astat"><div class="num" id="statSubmissions">0</div><div class="lbl">Submissions</div></div>
+    <div class="astat"><div class="num" id="statUsers">0</div><div class="lbl">Registered Users</div></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="admin-tabs">
+    <button class="atab active" onclick="switchTab('songs',this)">🎵 Songs</button>
+    <button class="atab" onclick="switchTab('requests',this)">🔔 Requests</button>
+    <button class="atab" onclick="switchTab('submissions',this)">📝 Submissions</button>
+    <button class="atab" onclick="switchTab('settings',this)">⚙️ Settings</button>
+  </div>
+
+  <!-- SONGS PANEL -->
+  <div class="admin-panel active" id="panel-songs">
+    <div class="admin-toolbar">
+      <div class="admin-search"><span class="ico">🔍</span><input type="text" placeholder="Search songs…" oninput="filterAdminSongs(this.value)"/></div>
+      <select id="adminInstrFilter" style="padding:10px 14px;border-radius:8px;background:var(--bg2);border:1px solid var(--border2);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:.87rem" onchange="filterAdminSongs()">
+        <option value="">All Instruments</option>
+        <option value="piano">Piano</option>
+        <option value="guitar">Guitar</option>
+        <option value="violin">Violin</option>
+      </select>
+      <button class="add-song-btn" onclick="openAddModal()">+ Add New Song</button>
+    </div>
+    <div class="songs-table-wrap">
+      <table class="songs-table">
+        <thead><tr>
+          <th>#</th><th>Title</th><th>Artist</th><th>Instruments</th><th>Key</th><th>Difficulty</th><th>Views</th><th>Actions</th>
+        </tr></thead>
+        <tbody id="adminSongsBody"></tbody>
+      </table>
+    </div>
+    <div style="font-size:.8rem;color:var(--text3);margin-top:12px;padding:0 4px" id="adminSongsCount"></div>
+  </div>
+
+  <!-- REQUESTS PANEL -->
+  <div class="admin-panel" id="panel-requests">
+    <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+      <p style="font-size:.88rem;color:var(--text2)">Community song requests — mark as in progress or done to update status.</p>
+      <button class="btn btn-outline" style="padding:8px 16px;font-size:.82rem" onclick="clearDoneRequests()">Clear Done</button>
+    </div>
+    <div class="req-admin-list" id="adminReqList"></div>
+  </div>
+
+  <!-- SUBMISSIONS PANEL -->
+  <div class="admin-panel" id="panel-submissions">
+    <p style="font-size:.88rem;color:var(--text2);margin-bottom:16px">Notations submitted by users — review and approve or reject.</p>
+    <div id="adminSubList"></div>
+  </div>
+
+  <!-- SETTINGS PANEL -->
+  <div class="admin-panel" id="panel-settings">
+    <div style="max-width:500px">
+      <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:24px;margin-bottom:16px">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;margin-bottom:1rem">Change Admin Password</h3>
+        <div class="field"><label>New Password</label><input type="password" id="newPass1" placeholder="New password"/></div>
+        <div class="field"><label>Confirm Password</label><input type="password" id="newPass2" placeholder="Confirm password"/></div>
+        <button class="add-song-btn" onclick="changePassword()">Update Password</button>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);padding:24px">
+        <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;margin-bottom:.6rem">Danger Zone</h3>
+        <p style="font-size:.85rem;color:var(--text2);margin-bottom:1rem">Reset all custom songs back to the original 24 demo songs.</p>
+        <button onclick="resetSongs()" style="padding:10px 20px;border-radius:8px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:#f87171;font-size:.87rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">Reset Song Database</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT SONG MODAL -->
+<div class="modal-overlay" id="songModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modalTitle">Add New Song</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId"/>
+      <div class="field-row">
+        <div class="field"><label>Song Title *</label><input type="text" id="mTitle" placeholder="e.g. Danno Budunge"/></div>
+        <div class="field"><label>Artist *</label><input type="text" id="mArtist" placeholder="e.g. Amaradeva"/></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Key</label>
+          <select id="mKey">
+            <option>C Major</option><option>G Major</option><option>D Major</option><option>A Major</option>
+            <option>F Major</option><option>A Minor</option><option>E Minor</option><option>D Minor</option>
+            <option>G Minor</option><option>B Minor</option><option>F Minor</option>
+          </select>
+        </div>
+        <div class="field"><label>Difficulty</label>
+          <select id="mDiff"><option value="easy">Easy</option><option value="medium" selected>Medium</option><option value="hard">Hard</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Genre</label>
+          <select id="mGenre"><option>Traditional</option><option>Classical</option><option>Ballad</option><option>Pop</option><option>Rock</option><option>Folk</option></select>
+        </div>
+        <div class="field"><label>Views (initial)</label><input type="number" id="mViews" value="100" min="0"/></div>
+      </div>
+      <div class="field">
+        <label>Instruments Available</label>
+        <div class="instr-checkboxes">
+          <label class="instr-cb"><input type="checkbox" value="piano" name="minstr"> 🎹 Piano</label>
+          <label class="instr-cb"><input type="checkbox" value="guitar" name="minstr"> 🎸 Guitar</label>
+          <label class="instr-cb"><input type="checkbox" value="violin" name="minstr"> 🎻 Violin</label>
+          <label class="instr-cb"><input type="checkbox" value="flute" name="minstr"> 🪗 Flute</label>
+          <label class="instr-cb"><input type="checkbox" value="drums" name="minstr"> 🥁 Drums</label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="add-song-btn" onclick="saveSong()">Save Song</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script>
+// ── PASSWORD ──────────────────────────────────────────
+const DEFAULT_PASS = 'swaralanka2025'; // ← CHANGE THIS!
+function getAdminPass(){ return localStorage.getItem('sl_admin_pass')||DEFAULT_PASS; }
+
+function checkPass(){
+  const inp=document.getElementById('adminPass').value;
+  if(inp===getAdminPass()){
+    localStorage.setItem('sl_admin_unlocked','1');
+    showAdmin();
+  } else {
+    document.getElementById('lockErr').classList.add('show');
+    document.getElementById('adminPass').value='';
+    document.getElementById('adminPass').focus();
+  }
+}
+function lockAdmin(){localStorage.removeItem('sl_admin_unlocked');location.reload();}
+function changePassword(){
+  const p1=document.getElementById('newPass1').value;
+  const p2=document.getElementById('newPass2').value;
+  if(!p1){showToast('Enter a new password','error');return;}
+  if(p1!==p2){showToast('Passwords do not match','error');return;}
+  if(p1.length<6){showToast('Password too short (min 6 chars)','error');return;}
+  localStorage.setItem('sl_admin_pass',p1);
+  showToast('Password updated successfully!','success');
+  document.getElementById('newPass1').value='';document.getElementById('newPass2').value='';
+}
+
+// Auto-unlock if already logged in this session
+if(localStorage.getItem('sl_admin_unlocked')==='1') showAdmin();
+
+function showAdmin(){
+  document.getElementById('lockScreen').style.display='none';
+  document.getElementById('adminPage').style.display='block';
+  loadStats();
+  renderAdminSongs(SONGS);
+  renderRequests();
+  renderSubmissions();
+}
+
+// ── CUSTOM SONGS (stored in localStorage) ────────────
+let customSongs = JSON.parse(localStorage.getItem('sl_custom_songs')||'null');
+// If null, use the built-in SONGS array
+if(!customSongs) customSongs = [...SONGS];
+
+function saveCustomSongs(){localStorage.setItem('sl_custom_songs',JSON.stringify(customSongs));}
+
+function loadStats(){
+  document.getElementById('statSongs').textContent=customSongs.length;
+  const reqs=JSON.parse(localStorage.getItem('sl_requests')||'[]');
+  const subs=JSON.parse(localStorage.getItem('sl_submissions')||'[]');
+  document.getElementById('statRequests').textContent=reqs.length;
+  document.getElementById('statSubmissions').textContent=subs.length;
+  document.getElementById('statUsers').textContent=localStorage.getItem('sl_user')?'1':'0';
+}
+
+// ── SONGS ─────────────────────────────────────────────
+let adminFiltered=[...customSongs];
+
+function filterAdminSongs(q){
+  const search=(q||document.querySelector('.admin-search input').value||'').toLowerCase();
+  const instr=document.getElementById('adminInstrFilter').value;
+  adminFiltered=customSongs.filter(s=>{
+    if(search && !s.title.toLowerCase().includes(search) && !s.artist.toLowerCase().includes(search)) return false;
+    if(instr && !s.instruments.includes(instr)) return false;
+    return true;
+  });
+  renderAdminSongs(adminFiltered);
+}
+
+function renderAdminSongs(songs){
+  const body=document.getElementById('adminSongsBody');
+  document.getElementById('adminSongsCount').textContent=`Showing ${songs.length} of ${customSongs.length} songs`;
+  body.innerHTML=songs.map((s,i)=>`
+    <tr id="arow-${s.id}">
+      <td style="color:var(--text3);font-family:'Cormorant Garamond',serif;font-size:1.1rem">${i+1}</td>
+      <td class="song-title-cell">${s.title}</td>
+      <td class="song-artist-cell">${s.artist}</td>
+      <td><div class="badges-cell">${s.instruments.map(instrBadge).join('')}</div></td>
+      <td style="color:var(--text3);font-size:.82rem">${s.key}</td>
+      <td>${diffBadge(s.difficulty)}</td>
+      <td style="color:var(--text3);font-size:.82rem">${(s.views||0).toLocaleString()}</td>
+      <td style="display:flex;gap:5px;flex-wrap:wrap">
+        <button class="action-btn view" onclick="window.open('song.html?id=${s.id}','_blank')">👁</button>
+        <button class="action-btn edit" onclick="openEditModal(${s.id})">✏️ Edit</button>
+        <button class="action-btn del" onclick="deleteSong(${s.id})">🗑 Delete</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── ADD / EDIT MODAL ──────────────────────────────────
+let editingId=null;
+
+function openAddModal(){
+  editingId=null;
+  document.getElementById('modalTitle').textContent='Add New Song';
+  document.getElementById('editId').value='';
+  document.getElementById('mTitle').value='';
+  document.getElementById('mArtist').value='';
+  document.getElementById('mViews').value='100';
+  document.querySelectorAll('[name="minstr"]').forEach(cb=>cb.checked=false);
+  document.getElementById('songModal').classList.add('show');
+}
+
+function openEditModal(id){
+  const song=customSongs.find(s=>s.id===id);
+  if(!song) return;
+  editingId=id;
+  document.getElementById('modalTitle').textContent='Edit Song';
+  document.getElementById('editId').value=id;
+  document.getElementById('mTitle').value=song.title;
+  document.getElementById('mArtist').value=song.artist;
+  document.getElementById('mKey').value=song.key;
+  document.getElementById('mDiff').value=song.difficulty;
+  document.getElementById('mGenre').value=song.genre;
+  document.getElementById('mViews').value=song.views||0;
+  document.querySelectorAll('[name="minstr"]').forEach(cb=>{cb.checked=song.instruments.includes(cb.value);});
+  document.getElementById('songModal').classList.add('show');
+}
+
+function closeModal(){document.getElementById('songModal').classList.remove('show');}
+
+function saveSong(){
+  const title=document.getElementById('mTitle').value.trim();
+  const artist=document.getElementById('mArtist').value.trim();
+  if(!title||!artist){showToast('Title and artist are required!','error');return;}
+  const instruments=[...document.querySelectorAll('[name="minstr"]:checked')].map(cb=>cb.value);
+  if(instruments.length===0){showToast('Select at least one instrument!','error');return;}
+  const songData={
+    title, artist,
+    key:document.getElementById('mKey').value,
+    difficulty:document.getElementById('mDiff').value,
+    genre:document.getElementById('mGenre').value,
+    instruments,
+    views:parseInt(document.getElementById('mViews').value)||0,
+    likes:0
+  };
+  if(editingId){
+    const idx=customSongs.findIndex(s=>s.id===editingId);
+    if(idx!==-1) customSongs[idx]={...customSongs[idx],...songData};
+    showToast(`"${title}" updated successfully!`,'success');
+  } else {
+    const newId=Math.max(...customSongs.map(s=>s.id),0)+1;
+    customSongs.unshift({id:newId,...songData});
+    showToast(`"${title}" added to the library!`,'success');
+  }
+  saveCustomSongs();
+  loadStats();
+  filterAdminSongs();
+  closeModal();
+}
+
+function deleteSong(id){
+  const song=customSongs.find(s=>s.id===id);
+  if(!song) return;
+  if(!confirm(`Delete "${song.title}" by ${song.artist}?\n\nThis cannot be undone.`)) return;
+  customSongs=customSongs.filter(s=>s.id!==id);
+  saveCustomSongs();
+  loadStats();
+  filterAdminSongs();
+  showToast(`"${song.title}" deleted.`,'success');
+}
+
+function resetSongs(){
+  if(!confirm('Reset ALL songs back to the original 24 demo songs? All your custom additions will be lost.')) return;
+  localStorage.removeItem('sl_custom_songs');
+  customSongs=[...SONGS];
+  loadStats();filterAdminSongs();
+  showToast('Database reset to defaults.','success');
+}
+
+// ── REQUESTS ──────────────────────────────────────────
+function renderRequests(){
+  const reqs=JSON.parse(localStorage.getItem('sl_requests')||'[]');
+  const list=document.getElementById('adminReqList');
+  if(reqs.length===0){list.innerHTML='<p style="color:var(--text3);padding:20px">No requests yet.</p>';return;}
+  list.innerHTML=reqs.sort((a,b)=>b.votes-a.votes).map(r=>`
+    <div class="req-admin-item" id="areq-${r.id}">
+      <div class="req-votes">▲${r.votes}</div>
+      <div class="req-admin-info">
+        <div class="req-admin-title">${r.title} — <span style="color:var(--text2)">${r.artist}</span></div>
+        <div class="req-admin-meta">${r.instrument||'Any'} · Requested by ${r.name||'Anonymous'} · ${r.date}</div>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">
+        <span class="req-status ${r.status}" style="padding:4px 10px;border-radius:50px;font-size:.72rem;font-weight:600">${r.status}</span>
+        <button class="action-btn edit" onclick="setReqStatus(${r.id},'inprogress')">⚡ In Progress</button>
+        <button class="approve-btn" onclick="setReqStatus(${r.id},'done')">✓ Done</button>
+        <button class="reject-btn" onclick="deleteReq(${r.id})">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setReqStatus(id,status){
+  const reqs=JSON.parse(localStorage.getItem('sl_requests')||'[]');
+  const r=reqs.find(x=>x.id===id);if(r) r.status=status;
+  localStorage.setItem('sl_requests',JSON.stringify(reqs));
+  renderRequests();showToast('Status updated','success');
+}
+function deleteReq(id){
+  if(!confirm('Remove this request?')) return;
+  let reqs=JSON.parse(localStorage.getItem('sl_requests')||'[]');
+  reqs=reqs.filter(r=>r.id!==id);
+  localStorage.setItem('sl_requests',JSON.stringify(reqs));
+  renderRequests();loadStats();showToast('Request removed','success');
+}
+function clearDoneRequests(){
+  let reqs=JSON.parse(localStorage.getItem('sl_requests')||'[]');
+  reqs=reqs.filter(r=>r.status!=='done');
+  localStorage.setItem('sl_requests',JSON.stringify(reqs));
+  renderRequests();loadStats();showToast('Done requests cleared','success');
+}
+
+// ── SUBMISSIONS ───────────────────────────────────────
+function renderSubmissions(){
+  const subs=JSON.parse(localStorage.getItem('sl_submissions')||'[]');
+  const list=document.getElementById('adminSubList');
+  if(subs.length===0){list.innerHTML='<p style="color:var(--text3);padding:20px">No submissions yet.</p>';return;}
+  list.innerHTML=subs.map(s=>`
+    <div class="sub-item" id="asub-${s.id}">
+      <div class="sub-header">
+        <div>
+          <div class="sub-title">"${s.title}" by ${s.artist}</div>
+          <div class="sub-by">Submitted by ${s.name} (${s.email}) · ${s.date} · ${s.instrument} · ${s.key} · ${s.difficulty}</div>
+        </div>
+        <div class="sub-actions">
+          <button class="approve-btn" onclick="approveSub(${s.id})">✓ Approve & Add</button>
+          <button class="reject-btn" onclick="rejectSub(${s.id})">✕ Reject</button>
+        </div>
+      </div>
+      <div style="font-size:.78rem;color:var(--text3)">${s.notes?.length>0?`"${s.notes}"`:''}</div>
+    </div>
+  `).join('');
+}
+
+function approveSub(id){
+  const subs=JSON.parse(localStorage.getItem('sl_submissions')||'[]');
+  const sub=subs.find(s=>s.id===id);if(!sub) return;
+  // Add to songs
+  const newId=Math.max(...customSongs.map(s=>s.id),0)+1;
+  const instrMap={'🎹 Piano / Keyboard':'piano','🎸 Guitar':'guitar','🎻 Violin':'violin','🪗 Flute':'flute','🥁 Drums':'drums'};
+  customSongs.unshift({id:newId,title:sub.title,artist:sub.artist,instruments:[instrMap[sub.instrument]||'piano'],key:sub.key||'C Major',difficulty:sub.difficulty||'medium',genre:sub.genre||'Pop',views:0,likes:0});
+  saveCustomSongs();
+  // Remove from subs
+  const newSubs=subs.filter(s=>s.id!==id);
+  localStorage.setItem('sl_submissions',JSON.stringify(newSubs));
+  renderSubmissions();renderAdminSongs(customSongs);loadStats();
+  showToast(`"${sub.title}" approved and added to library!`,'success');
+}
+function rejectSub(id){
+  if(!confirm('Reject and delete this submission?')) return;
+  let subs=JSON.parse(localStorage.getItem('sl_submissions')||'[]');
+  subs=subs.filter(s=>s.id!==id);
+  localStorage.setItem('sl_submissions',JSON.stringify(subs));
+  renderSubmissions();loadStats();showToast('Submission rejected','success');
+}
+
+// ── TABS ──────────────────────────────────────────────
+function switchTab(name,btn){
+  document.querySelectorAll('.admin-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── TOAST ─────────────────────────────────────────────
+function showToast(msg,type='success'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show '+(type||'');
+  setTimeout(()=>t.className='toast',2800);
+}
+
+// Close modal on overlay click
+document.getElementById('songModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+// Enter to unlock
+document.getElementById('adminPass')?.addEventListener('keydown',e=>{if(e.key==='Enter')checkPass();});
+</script>
+</body>
+</html>

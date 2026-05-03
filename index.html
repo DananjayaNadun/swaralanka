@@ -117,22 +117,7 @@
 </head>
 <body>
 
-<nav>
-  <a class="logo" href="index.html">
-    <div class="logo-icon">🎵</div>
-    <div class="logo-text">Swara<span>Lanka</span></div>
-  </a>
-  <div class="nav-links">
-    <a href="index.html" class="active">Home</a>
-    <a href="browse.html">Browse</a>
-    <a href="browse.html?filter=piano">Piano</a>
-    <a href="browse.html?filter=guitar">Guitar</a>
-    <a href="browse.html?filter=artists">Artists</a>
-  </div>
-  <div class="nav-btns">
-    <button class="btn btn-outline">Login</button>
-    <button class="btn btn-gold">Register Free</button>
-  </div>
+<nav id="mainNav"></nav>
 </nav>
 
 <!-- HERO -->
@@ -331,7 +316,10 @@
 </footer>
 
 <script src="js/data.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/nav.js"></script>
 <script>
+injectNav('home');
 // Floating notes
 const canvas=document.getElementById('notesCanvas');
 ['♩','♪','♫','♬','𝄞','𝄢'].forEach((c,i)=>{
